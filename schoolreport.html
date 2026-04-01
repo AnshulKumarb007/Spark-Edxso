@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Performance Report: Spark Olympiad</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0c4bad 20%, #001e47 80%);
+      min-height: 100vh;
+      margin: 0;
+      padding: 30px 15px;
+      color: #1e293b;
+    }
+            .report-container { 
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 30px;
+        background: white;
+        border-radius: 12px;
+                }
+    h1 {
+      font-size: 28px;
+      font-weight: bold;
+
+      margin-bottom: 18px;
+      color: #000;
+    }
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 20px 0 6px 0;
+      color: #000;
+    }
+    .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+    h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 14px 0 6px 0;
+    }
+    p { margin-bottom: 8px; line-height: 1.5; }
+
+    /* --- Section 1 header --- */
+    .section1-header {
+      font-size: 15px;
+      font-weight: 700;
+      margin: 22px 0 4px 0;
+    }
+    .section1-sub {
+      font-size: 11px;
+      font-weight: 400;
+      margin-left: 6px;
+    }
+    .school-grade-header {
+      font-size: 14px;
+      font-weight: 400;
+      margin: 18px 0 6px 0;
+    }
+    .school-grade-header strong {
+      font-weight: 700;
+    }
+
+    /* --- Two-column chart+text layout --- */
+    .split-box {
+      display: flex;
+      border: 1px solid #999;
+      margin-bottom: 20px;
+      min-height: 360px;
+    }
+    .split-left {
+      flex: 0 0 42%;
+      border-right: 1px solid #999;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      background: #fff;
+    }
+    .split-right {
+      flex: 1;
+      padding: 16px 20px;
+      font-size: 16px;
+      line-height: 1.55;
+    }
+    .split-right .subject-block {
+      margin-bottom: 14px;
+    }
+    .split-right .subj-title {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 2px;
+    }
+    .split-right .divider-line {
+      border: none;
+      border-top: 1px solid #555;
+      margin: 3px 0 6px 0;
+    }
+
+    /* legend table under bar chart */
+    .legend-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10.5px;
+      margin-top: 8px;
+    }
+    .legend-table td {
+      border: 1px solid #ccc;
+      padding: 3px 6px;
+      text-align: center;
+    }
+    .legend-swatch {
+      display: inline-block;
+      width: 14px;
+      height: 12px;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+
+    /* --- Competency section --- */
+    .repeat-note {
+      font-size: 12px;
+      font-style: italic;
+      margin: 12px 0 18px 0;
+    }
+
+    /* --- Performance Band table (split layout) --- */
+    .band-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .band-table th {
+      background: #add8e6;
+      padding: 6px 10px;
+      font-weight: 700;
+      border: 1px solid #aac;
+      text-align: left;
+    }
+    .band-table td {
+      padding: 8px 10px;
+      border: 1px solid #ccd;
+      vertical-align: top;
+    }
+    .band-table tr:nth-child(odd) td { background: #fff; }
+    .band-row-label {
+      font-weight: 700;
+      white-space: nowrap;
+      min-width: 150px;
+    }
+    .comp-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .comp-tag {
+      font-size: 12px;
+      color: #000;
+    }
+
+    /* --- Dark radar chart section --- */
+    .dark-split-box {
+      display: flex;
+      border: 1px solid #999;
+      margin-bottom: 20px;
+      min-height: 380px;
+    }
+    .dark-split-left {
+      flex: 0 0 58%;
+      background: #3a3a3a;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-right: 1px solid #999;
+    }
+    .dark-split-right {
+      flex: 1;
+      padding: 18px 20px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .dark-split-right h3 { font-size: 13px; margin-bottom: 10px; }
+    .dark-split-right ul { margin-left: 18px; margin-bottom: 8px; }
+    .dark-split-right ul li { margin-bottom: 4px; }
+
+    /* --- Competency detail table --- */
+    .comp-detail-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+            .grade-header {
+            background-color: #f0f0f0;
+            padding: 10px 20px;
+            margin: 20px 0 0 0;
+            border: 1px solid #ddd;
+            font-weight: bold;
+            font-size: 18px;
+        }
+    .comp-detail-table th {
+      background: #add8e6;
+      color: #000;
+      padding: 8px 8px;
+      border: 1px solid #aac;
+      font-weight: 700;
+      vertical-align: bottom;
+    }
+    .comp-detail-table td {
+      padding: 7px 8px;
+      border: 1px solid #ccd;
+      vertical-align: top;
+      line-height: 1.45;
+    }
+    .comp-detail-table tr:nth-child(even) td { background: #f5f5f5; }
+    .comp-detail-table td:first-child { font-weight: 700; white-space: nowrap; }
+    .band-sig-below { color: #000; }
+
+    /* --- Competency highlights table (page 6 style) --- */
+    .highlights-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    .highlights-table th {
+      background: #add8e6;
+      padding: 7px 8px;
+      border: 1px solid #aab;
+      font-weight: 700;
+      vertical-align: bottom;
+    }
+    .highlights-table td {
+      padding: 6px 8px;
+      border: 1px solid #ccc;
+      vertical-align: top;
+      line-height: 1.4;
+    }
+
+            .button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
+}
+    .highlights-table tr:nth-child(even) td { background: #f7f7f7; }
+    .highlights-table td.comp-id { font-weight: 700; white-space: nowrap; }
+
+    canvas { max-width: 100%; }
+
+    @media print {
+      body { padding: 20px 30px; }
+      .split-box, .dark-split-box { page-break-inside: avoid; }
+      .no-print {
+       display: none !important;
+       }
+    }
+
+ .page {
+    min-height: 850px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px 40px 30px;
+    position: relative;
+  }
+  .spark-logo {
+    width: 160px;
+    margin-bottom: 35px;
+  }
+
+  .heading-block {
+    width: 80%;
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+  }
+
+  /* India's First - sits above box, white bg hides the top border behind it */
+  .indias-first-wrap {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 0;
+    line-height: 1;
+  }
+  .indias-first {
+    color: #1A4FB5;
+    font-size: 35px;
+    font-weight: bold;
+    font-style: ;
+    font-family: CRIMSON PRO;
+    display: inline-block;
+    background: #fff;
+    padding: 0 8px;
+    position: relative;
+    top: 2px;
+  }
+
+  /* Box: NO top border, only left right bottom */
+  .box-section {
+  padding: 10px 20px 14px;
+  position: relative;
+  border: 2px solid #8fb1cf;   /* base light blue border */
+}
+
+/* Bottom gradient overlay */
+.box-section {
+  padding: 10px 20px 14px;
+  position: relative;
+  border: 2px solid #8fb1cf;
+}
+
+.box-section {
+  position: relative;
+  border-bottom: 2px solid;
+  border-image: linear-gradient(
+    to right,
+    #6f8fb3 0%,
+    #9fb6cc 30%,
+    #f06d2f 35%,
+    #f06d2f 65%,
+    #9fb6cc 70%,
+    #6f8fb3 100%
+  ) 1;
+}
+  
+  @media print {
+  .box-section {
+    /* Maintain gradient visually */
+    border-bottom-width: 1px !important;
+    border-top-width: 1px !important;  /* 2px ? 1px to prevent thick print */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+
+
+
+  .competency-based {
+    color: #E8500A;
+    font-size: 35px;
+    font-weight: bold;
+    font-style: ;
+    font-family: crimson pro;
+    margin-bottom: 4px;
+    line-height: 1;
+  }
+
+  .online-olympiad {
+    font-size: 48px;
+    font-weight: bold;
+    color: #E8500A;
+    font-family:Crimson pro;
+  }
+  @media print {
+  .online-olympiad {
+    white-space: nowrap;
+    font-size: 30px; 
+  }
+}
+
+
+  .school-label {
+    font-size: 18px;
+    font-style: ;
+    color: #333;
+    margin-bottom: 6px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+  }
+  .report-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #111;
+    font-family: crimson pro;
+    margin-bottom: 40px;
+  }
+  .by-divider {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 30px;
+    gap: 15px;
+  }
+  .by-divider hr {
+    flex: 1;
+    border: none;
+    border-top: 1px solid #999;
+  }
+  .by-divider span {
+    color: #555;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+  }
+  .logos-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: auto;
+    gap: 20px;
+  }
+  .logo-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex: 1;
+  }
+  .logo-item img {
+    height: 40px;
+    object-fit: contain;
+    margin-bottom: 10px;
+  }
+  .logo-item p {
+    font-size: 12px;
+    color: #333;
+    font-family: Arial, sans-serif;
+    line-height: 1.5;
+  }
+  .footeer {
+    border-top: 1px solid #ccc;
+    width: 100%;
+    padding-top: 15px;
+    text-align: center;
+    margin-top: 40px;
+  }
+  .footeer p {
+    font-size: 11px;
+    color: #444;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+  }
+  .prometric-label {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    letter-spacing: 2px;
+    color: #111;
+    margin-bottom: 6px;
+    font-weight: bold;
+  }
+.top{
+mar
+}
+@media print {
+  /* Force header to start from next page */
+  .report-container > header {
+    page-break-before: always;   /* new page pe start karega */
+  }
+
+  /* Logo size stable */
+  .report-container header img {
+    display: block;
+    height: 100px !important;
+    width: auto !important;
+    max-width: 100%;
+  }
+}
+
+  </style>
+  </head>
+  <body>
+    
+    <div class="report-container">
+      <header
+        class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+        <div class="header">
+                  <button style="" class="button no-print"
+            onclick="window.print()">Download</button>
+
+        </div>
+      </header>
+
+<section class="top">
+<div class="page">
+  <img src="/studentreport/content.png" class="spark-logo" alt="Spark Olympiads">
+  
+  <div class="heading-block">
+    <div class="indias-first-wrap">
+      <span class="indias-first">India's First</span>
+    </div>
+    <div class="box-section">
+      
+      <div class="online-olympiad">Competency Based Online Olympiad</div>
+    </div>
+  </div>
+  
+  <div class="school-label">'School Name'</div>
+  <div class="report-title">Olympiad Report</div>
+  
+  <div class="by-divider">
+    <hr>
+    <span>By</span>
+    <hr>
+  </div>
+  
+  <div class="logos-row">
+    <div class="logo-item">
+       <img src="/studentreport/edxso-logo.png" alt="Logo"
+            width="100"
+            height="50">
+      <p>India's Premier<br>Education Consultants</p>
+    </div>
+    <div class="logo-item">
+      <div class="prometric-label"></div>
+       <img src="/studentreport/prometric-logo.png" alt="Logo"
+            width="100"
+            height="50">      <p>Global Leaders in Secure<br>Large Scale Online Testing</p>
+    </div>
+  </div>
+  
+  <div class="footeer">
+    <p>For More Information, Contact:<br>
+    reachout@sparkolympiads.com &nbsp;|&nbsp; +91 84474 77275</p>
+  </div>
+</div>
+</section>
+</div>
+<div class="report-container">
+	<header
+        class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+        <div class="header">
+          <img src="/studentreport/content.png" alt="Logo"
+            height="100">
+           </div>
+      </header>
+
+	<hr class="divider-line">
+
+
+
+      <h1 style="margin-top: 20px;">School Performance Report: Spark
+        Olympiad</h1>
+	 <h2>School Name</h2>
+
+      <p>Dear School Leader,</p>
+
+      <p>We are pleased to share the results for Spark Olympiad 2025
+        conducted by EDXSO in collaboration with Prometric.</p>
+
+      <h2>1. Subject Performance & Analysis</h2>
+      <p>This section compares School's performance against National Average.</p>
+
+      <div class="grade-header">Grade 6</div><br>
+
+      <!-- Split: Bar+Radar chart | Learning Insights -->
+      <div class="split-box">
+        <div class="split-left">
+          <!-- Bar Chart -->
+          <div style="width:100%;">
+            <canvas id="barChart6" height="180"></canvas>
+            <table class="legend-table">
+              <tr>
+                <td><span class="legend-swatch"
+                    style="background:#4472C4;"></span>School_Average</td>
+                <td>41.67%</td><td>36.67%</td><td>34.89%</td><td>41.86%</td>
+              </tr>
+              <tr>
+                <td><span class="legend-swatch"
+                    style="background:#C00000; height:3px; margin-top:5px;"></span>National Average</td>
+                <td>55.33%</td><td>44.52%</td><td>42.99%</td><td>53.17%</td>
+              </tr>
+            </table>
+          </div>
+          <!-- Radar Chart below -->
+          <div style="width:100%; margin-top:16px;">
+            <canvas id="radarChart1" height="200"></canvas>
+          </div>
+        </div>
+        <div class="split-right">
+          <div class="subject-block">
+            <div class="subj-title">EVS/Science - GRADE 6</div>
+            <hr class="divider-line">
+            <p><strong>LEARNING INSIGHTS:</strong></p>
+            <p><strong>FOCUSED IMPROVEMENT OPPORTUNITY:</strong><br>
+              Current performance trends indicate scope to strengthen alignment
+              with national benchmarks. Additional emphasis on application-level
+              understanding within the EVS/Science curriculum can further
+              support student progress and confidence.</p>
+          </div>
+          <div class="subject-block">
+            <div class="subj-title">India Awareness - GRADE 6</div>
+            <hr class="divider-line">
+            <p><strong>LEARNING INSIGHTS:</strong><br>
+              <strong>FOCUSED IMPROVEMENT OPPORTUNITY:</strong><br>
+              Current performance trends indicate scope to strengthen alignment
+              with national benchmarks. Additional emphasis on application-level
+              understanding within the India Awareness curriculum can further
+              support student progress and confidence.</p>
+          </div>
+          <div class="subject-block">
+            <div class="subj-title">Math - GRADE 6</div>
+            <hr class="divider-line">
+            <p><strong>LEARNING INSIGHTS:</strong><br>
+              <strong>FOCUSED IMPROVEMENT OPPORTUNITY:</strong><br>
+              Current performance trends indicate scope to strengthen alignment
+              with national benchmarks. Additional emphasis on application-level
+              understanding within the Math curriculum can further support
+              student progress and confidence.</p>
+          </div>
+          <div class="subject-block">
+            <div class="subj-title">Reading - GRADE 6</div>
+            <hr class="divider-line">
+            <p><strong>LEARNING INSIGHTS:</strong><br>
+              <strong>FOCUSED IMPROVEMENT OPPORTUNITY:</strong><br>
+              Current performance trends indicate scope to strengthen alignment
+              with national benchmarks. Additional emphasis on application-level
+              understanding within the Reading curriculum can further support
+              student progress and confidence.</p>
+          </div>
+        </div>
+      </div>
+
+      <p class="repeat-note">Repeat for All Grades for the School</p>
+
+      <!-- ===== SECTION 2 ===== -->
+      <h2>2. Competency-Wise Performance</h2>
+      <p style="font-size:11px; margin-bottom:10px;">This section breaks down
+        performance of school students by specific competence within each
+        subject.</p>
+      <h3>Grade 6 - EVS Competency based Performance:</h3>
+
+      <!-- Split: small radar + Performance Band table -->
+      <div class="split-box" style="min-height:280px;">
+        <div class="split-left" style="flex: 0 0 42%;">
+          <canvas id="radarChartSmall2" height="230"></canvas>
+        </div>
+        <div class="split-right" style="padding:14px 18px;">
+          <table class="band-table">
+            <thead>
+              <tr>
+                <th>Performance Band</th>
+                <th>Competency</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="band-row-label">1 - Significantly below National
+                  Average</td>
+                <td>
+                  <div class="comp-tags">
+                    <span class="comp-tag">6.C-1.1</span><span
+                      class="comp-tag">6.C-1.4</span>
+                    <span class="comp-tag">6.C-2.4</span><span
+                      class="comp-tag">6.C-3.1</span>
+                    <span class="comp-tag">6.C-3.3</span><span
+                      class="comp-tag">6.C-5.1</span>
+                    <span class="comp-tag">6.C-9.1</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="band-row-label">2 - Below National Average</td>
+                <td>
+                  <div class="comp-tags">
+                    <span class="comp-tag">6.C-1.2</span><span
+                      class="comp-tag">6.C-1.5</span>
+                    <span class="comp-tag">6.C-2.3</span><span
+                      class="comp-tag">6.C-2.5</span>
+                    <span class="comp-tag">6.C-3.5</span><span
+                      class="comp-tag">6.C-4.2</span>
+                    <span class="comp-tag">6.C-8.1</span><span
+                      class="comp-tag">6.C-8.2</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="band-row-label">3 - In line with National
+                  Average</td>
+                <td>
+                  <div class="comp-tags">
+                    <span class="comp-tag">6.C-4.1</span><span
+                      class="comp-tag">6.C-4.3</span>
+                    <span class="comp-tag">6.C-4.4</span><span
+                      class="comp-tag">6.C-5.2</span>
+                    <span class="comp-tag">6.C-7.1</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="band-row-label">4 - Above National
+                  Average</td>
+                <td>
+                  <div class="comp-tags">
+                    <span class="comp-tag">-</span>                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="band-row-label">5 - Significantly Above National
+                  Average</td>
+                <td>
+                  <div class="comp-tags">
+                    <span class="comp-tag">-</span>                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ===== Competency Highlights Table ===== -->
+      <h3>Grade 6 - Competency based Highlights : - EVS</h3>
+      <table class="highlights-table">
+        <thead>
+          <tr>
+            <th style="min-width:80px;">Competency</th>
+            <th style="min-width:260px;">CompetencyDescription</th>
+            <th style="min-width:80px;">School<br>Competency<br>Average</th>
+            <th style="min-width:80px;">National<br>Competency<br>Average</th>
+            <th style="min-width:70px;">Variance</th>
+            <th style="min-width:140px;">Performance Band</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="comp-id">6.C-1.2</td>
+            <td>Describes changes in matter (physical and chemical) and uses
+              particulate nature to represent the properties of matter and the
+              changes.</td>
+            <td>33.611%</td><td>49.53%</td><td>-15.92%</td>
+            <td style="background-color: #f82f05; color:#f9f9f9;">1 -
+              Significantly below National Average</td>
+          </tr>
+          <tr>
+            <td class="comp-id">6.C-1.4</td>
+            <td>Observes and explains the phenomena caused due to differences in
+              pressure, temperature, and density (e.g., breathing,
+              sinking-floating, water pumps in homes, cooling of things,
+              formation of winds).</td>
+            <td>45.000%</td><td>49.24%</td><td>-4.24%</td>
+            <td style="background-color: #2db2eb;">3 - In line with National
+              Average</td>
+          </tr>
+          <tr>
+            <td class="comp-id">6.C-2.1</td>
+            <td>Describes one-dimensional motion (uniform, non-uniform,
+              horizontal, vertical) using physical measurements (position,
+              speed, and changes in speed) through mathematical and diagrammatic
+              representations.</td>
+            <td>30.000%</td><td>49.86%</td><td>-19.86%</td>
+            <td style="background-color: #46d458;">5 - Significantly below
+              National Average</td>
+          </tr>
+          <tr>
+            <td class="comp-id">6.C-2.2</td>
+            <td>Describes how electricity works through manipulating different
+              elements in simple circuits and demonstrates the heating and
+              magnetic effects of electricity.</td>
+            <td>31.111%</td><td>41.91%</td><td>-10.80%</td>
+            <td style="background-color: #fbc5aa;">2 - Significantly below
+              National Average</td>
+          </tr>
+          <tr>
+            <td class="comp-id">6.C-2.5</td>
+            <td>Observes and identifies celestial objects (stars, planets,
+              natural and artificial satellites, constellations, comets) in the
+              night sky using a simple telescope and images/photographs, and
+              explains their role in navigation, calendars, and other
+              phenomena.</td>
+            <td>39.167%</td><td>44.12%</td><td>-4.95%</td>
+            <td style="background-color: #f82f05; color:#f9f9f9;">1 - In line
+              with National Average</td>
+          </tr>
+          <tr>
+            <td class="comp-id">6.C-3.1</td>
+            <td>Describes the diversity of living things observed in the natural
+              surroundings (insects, earthworms, snails, birds, mammals,
+              reptiles, spiders, diverse plants, and fungi), including at a
+              smaller scale (microscopic organisms).</td>
+            <td>53.889%</td><td>69.12%</td><td>-15.23%</td>
+            <td style="background-color: #c4eec5;">4 - Significantly below
+              National Average</td>
+          </tr>
+          <tr>
+            <td class="comp-id">6.C-3.2</td>
+            <td>Distinguishes the characteristics of living organisms (need for
+              nutrition, growth and development, need for respiration, response
+              to stimuli, reproduction, excretion, cellular organisation) from
+              non-living things.</td>
+            <td>40.000%</td><td>44.31%</td><td>-4.31%</td>
+            <td style="background-color: #2db2eb;">3 - In line with National
+              Average</td>
+          </tr>
+          <tr>
+            <td class="comp-id">6.C-3.3</td>
+            <td>Analyses patterns of relationships between living organisms and
+              their environments in terms of dependence on and response to each
+              other.</td>
+            <td>28.333%</td><td>53.06%</td><td>-24.72%</td>
+            <td style="background-color: #fbc5aa;">2 - Significantly below
+              National Average</td>
+          </tr>
+          <tr>
+            <td class="comp-id">6.C-4.1</td>
+            <td>Understand the importance of hygiene and sanitation for
+              health.</td>
+            <td>51.667%</td><td>55.19%</td><td>-3.52%</td>
+            <td style="background-color: #c4eec5;">4 - In line with National
+              Average</td>
+          </tr>
+          <tr>
+            <td class="comp-id">6.C-4.2</td>
+            <td>Examines different dimensions of diversity of food - sources,
+              nutrients, climatic conditions, and diets.</td>
+            <td>54.524%</td><td>68.37%</td><td>-13.84%</td>
+            <td style="background-color: #2db2eb;">3 - Significantly below
+              National Average</td>
+          </tr>
+          <tr>
+            <td class="comp-id">6.C-4.3</td>
+            <td>Describes biological changes (growth, hormonal) during
+              adolescence, and measures to ensure overall well-being.</td>
+            <td>47.083%</td><td>59.90%</td><td>-12.82%</td>
+            <td style="background-color: #46d458;">5 - Significantly below
+              National Average</td>
+          </tr>
+          <tr>
+            <td class="comp-id">6.C-5.1</td>
+            <td>Illustrates how Science and Technology can help to improve the quality of human life 
+               (health care, communication, transportation, food security, mitigation of climate change, 
+               judicious consumption of resources, applications of artificial satellites) 
+               as well as some of the harmful uses of science in history.</td>
+            <td>43.333%</td><td>65.87%</td><td>-22.53%</td>
+            <td style="background-color: #f82f05; color: #f9f9f9;">1 -
+              Significantly below National Average</td>
+          </tr>
+          <tr>
+            <td class="comp-id">6.C-5.2</td>
+            <td>Shares views on news and articles related to the impact that
+              Science/Technology and society have on each other.</td>
+            <td>43.333%</td><td>61.08%</td><td>-17.74%</td>
+            <td style="background-color: #2db2eb;">3 - Significantly below
+              National Average</td>
+          </tr>
+          <tr>
+            <td class="comp-id">6.C-6.1</td>
+            <td>Illustrates how scientific knowledge and ideas have changed over time 
+                (description of the motion of objects and planets, spontaneous generation of life, number of planets)
+                and identifies the scientific values that are inherent and common across the evolution of scientific knowledge
+                (scientific temper, Science as a collective endeavour, conserving biodiversity and ecosystems).</td>
+            <td>26.667%</td><td>50.30%</td><td>-23.63%</td>
+            <td style="background-color: #fbc5aa;">2 - Significantly below
+              National Average</td>
+          </tr>
+          <tr>
+            <td class="comp-id">6.C-6.2</td>
+            <td>Formulates questions using scientific terminology (to identify possible causes
+                for an event, patterns, or behaviour of objects)
+                and collects data as evidence (through observation of the natural environment, 
+                design of simple experiments, or use of simple scientific instruments).</td>
+            <td>32.500%</td><td>46.32%</td><td>-13.82%</td>
+            <td style="background-color: #46d458;">5 - Significantly below
+              National Average</td>
+          </tr>
+          <tr>
+            <td class="comp-id">6.C-7.1</td>
+            <td>Uses scientific vocabulary to communicate Science accurately in
+              oral and written form, and through visual representation.</td>
+            <td>41.667%</td><td>56.95%</td><td>-15.29%</td>
+            <td style="background-color: #c4eec5;">4 - Significantly below
+              National Average</td>
+          </tr>
+          <tr>
+            <td class="comp-id">6.C-8.1</td>
+            <td>Knows and explains the significant contributions of India to all
+              matters (concepts, explanations, methods) that are studied within
+              the curriculum in an integrated manner.</td>
+            <td>34.167%</td><td>54.04%</td><td>-19.88%</td>
+            <td style="background-color: #f82f05; color: #f9f9f9;">1 -
+              Significantly below National Average</td>
+          </tr>
+          <tr>
+            <td class="comp-id">6.C-9.1</td>
+            <td>States concepts that represent the most current understanding of
+              the matter being studied - ranging from mere familiarity to
+              conceptual understanding of the matter as appropriate to the
+              developmental stage of the students.</td>
+            <td>40.417%</td><td>47.10%</td><td>-6.68%</td>
+            <td style="background-color: #fbc5aa;">2 - Below National
+              Average</td>
+          </tr>
+          <tr>
+            <td class="comp-id">6.C-9.2</td>
+            <td>States questions related to matters in the curriculum for which
+              current scientific understanding is well-recognised to be
+              inadequate.</td>
+            <td>46.667%</td><td>48.57%</td><td>-1.90%</td>
+            <td style="background-color: #2db2eb;">3 - In line with National
+              Average</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="repeat-note"></p>
+      <footer>
+       <div>
+             <p class="text-center">This report is the intellectual property of  Spark Olympiad (Edxso) and is shared 
+              solely for internal academic review by the respective school. Any unauthorized use or distribution is not permitted.</p>
+       </div>
+        <div class="footer navbar-brand d-flex align-items-center gap-2"
+          href="#">
+          <img src="/studentreport/edxso-logo.png" alt="Logo"
+            width="100"
+            height="50">
+          <img src="/studentreport/prometric-logo.png" alt="Logo"
+            width="100"
+            height="50">
+        </div>
+       
+
+      </footer>
+    </div>
+
+    <script>
+// ===== Bar Chart Grade 6 (Section 1) =====
+const barCtx = document.getElementById('barChart6').getContext('2d');
+new Chart(barCtx, {
+  type: 'bar',
+  data: {
+    labels: ['EVS/Science', 'India Awareness', 'Math', 'Reading'],
+    datasets: [{
+      label: 'School_Average',
+      data: [41.67, 36.67, 34.89, 41.86],
+      backgroundColor: '#4472C4',
+      order: 2
+    }, {
+      label: 'Test_Average',
+      data: [55.33, 44.52, 42.99, 53.17],
+      type: 'line',
+      borderColor: '#C00000',
+      backgroundColor: '#C00000',
+      borderWidth: 2,
+      pointRadius: 4,
+      pointBackgroundColor: '#C00000',
+      tension: 0,
+      order: 1,
+      datalabels: {
+        display: true,
+        align: 'top',
+        anchor: 'end',
+        font: { size: 9 },
+        formatter: v => v.toFixed(2) + '%'
+      }
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: { display: false },
+      datalabels: {
+        display: ctx => ctx.datasetIndex === 1
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true, max: 60,
+        ticks: { callback: v => v.toFixed(2) + '%', font: { size: 9 } },
+        title: { display: true, text: 'Axis Title', font: { size: 9 } },
+        grid: { color: '#E0E0E0' }
+      },
+      x: { grid: { display: false }, ticks: { font: { size: 9 } } }
+    },
+    layout: { padding: { top: 18, right: 8, bottom: 4, left: 4 } }
+  },
+  plugins: [ChartDataLabels]
+});
+
+ // Radar Chart 1 - Grade 6 Overall Performance
+    const ctxRadar1 = document.getElementById('radarChart1').getContext('2d');
+    const radarChart1 = new Chart(ctxRadar1, {
+      type: 'radar',
+      data: {
+        labels: ['EVS/Science', 'India Awareness', 'Math', 'Reading'],
+        datasets: [{
+          label: 'School Average',
+          data: [41.67, 36.67, 34.89, 41.86],
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }, {
+          label: 'National Average',
+          data: [55.33, 44.52, 42.99, 53.17],
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+          r: {
+            beginAtZero: true,
+            max: 60,
+            ticks: {
+              stepSize: 10,
+              callback: function(value) { return value + '%'; },
+              font: {
+                size: 10
+              }
+            },
+            pointLabels: {
+              font: {
+                size: 11
+              }
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'bottom'
+          }
+        }
+      }
+    });
+
+// ===== Small Radar (Section 2 - competency light) =====
+const compLabels19 = ['6.C-1.2','6.C-1.4','6.C-2.1','6.C-2.2','6.C-2.5',
+  '6.C-3.1','6.C-3.2','6.C-3.3','6.C-4.1','6.C-4.2','6.C-4.3',
+  '6.C-5.1','6.C-5.2','6.C-6.1','6.C-6.2','6.C-7.1','6.C-8.1','6.C-9.1','6.C-9.2'];
+const schoolVals = [33.61,45.00,30.00,31.11,39.17,53.89,40.00,28.33,51.67,54.52,47.08,43.33,43.33,26.67,32.50,41.67,34.17,40.42,46.67];
+const testVals   = [49.53,49.24,49.86,41.91,44.12,69.12,44.31,53.06,55.19,68.37,59.90,65.87,61.08,50.30,46.32,56.95,54.04,47.10,48.57];
+
+const r2Ctx = document.getElementById('radarChartSmall2').getContext('2d');
+new Chart(r2Ctx, {
+  type: 'radar',
+  data: {
+    labels: compLabels19,
+    datasets: [{
+      label: 'School Average',
+      data: schoolVals,
+      borderColor: '#4472C4', backgroundColor: 'rgba(68,114,196,0.15)',
+      borderWidth: 1.5, pointRadius: 2
+    }, {
+      label: 'National Average',
+      data: testVals,
+      borderColor: '#C00000', backgroundColor: 'rgba(192,0,0,0.1)',
+      borderWidth: 1.5, pointRadius: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true, position: 'top',
+        labels: { font: { size: 8 }, boxWidth: 16, padding: 4 }
+      },
+      datalabels: { display: false }
+    },
+    scales: {
+      r: {
+        beginAtZero: true, max: 75,
+        ticks: {
+          stepSize: 25,
+          callback: v => v + '%',
+          font: { size: 7 },
+          backdropColor: 'transparent'
+        },
+        grid: { color: '#ccc' },
+        pointLabels: { font: { size: 7 } }
+      }
+    }
+  }
+});
+
+// ===== Dark Radar Chart (full competency) =====
+const darkCtx = document.getElementById('radarChartDark').getContext('2d');
+new Chart(darkCtx, {
+  type: 'radar',
+  data: {
+    labels: compLabels19,
+    datasets: [{
+      label: 'Average of SchoolCompetency',
+      data: schoolVals,
+      borderColor: '#5B9BD5', backgroundColor: 'rgba(91,155,213,0.15)',
+      borderWidth: 1.5, pointRadius: 2, pointBackgroundColor: '#5B9BD5'
+    }, {
+      label: 'Average of TestCompetency',
+      data: testVals,
+      borderColor: '#FF4040', backgroundColor: 'rgba(255,64,64,0.1)',
+      borderWidth: 1.5, pointRadius: 2, pointBackgroundColor: '#FF4040'
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true, position: 'bottom',
+        labels: { color: '#fff', font: { size: 9 }, boxWidth: 18, padding: 8 }
+      },
+      datalabels: { display: false }
+    },
+    scales: {
+      r: {
+        beginAtZero: true, max: 100,
+        ticks: {
+          stepSize: 25,
+          callback: v => v + '%',
+          color: '#ccc',
+          font: { size: 7 },
+          backdropColor: 'transparent'
+        },
+        grid: { color: 'rgba(255,255,255,0.2)' },
+        angleLines: { color: 'rgba(255,255,255,0.2)' },
+        pointLabels: { color: '#ddd', font: { size: 7.5 } }
+      }
+    }
+  }
+});
+</script>
+  </body>
+</html>

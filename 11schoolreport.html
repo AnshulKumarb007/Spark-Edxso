@@ -1,0 +1,2028 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>School Performance Report: Spark Olympiad</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+            rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+        <style>
+        body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0c4bad 20%, #001e47 80%);
+      min-height: 100vh;
+      margin: 0;
+      padding: 30px 15px;
+      color: #1e293b;
+    }
+        .report-container { 
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 30px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        }
+        @media (max-width: 768px) {
+        .report-container {
+        margin: 20px;
+        padding: 20px;
+        }
+        }
+        .logo-img {
+            width: 100px;
+            height: auto;
+        }
+        .button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.button:hover {
+    background-color: #357c39;
+}
+        h1 { color: #333; }
+        h2, h3 { color: #333; }
+        h1 { font-size: 28px; font-weight: bold;}
+        h2 { font-size: 22px; font-weight: bold;}
+        h3 { font-size: 16px;font-weight: bold;}
+        h4 { font-size: 15px; font-weight: bold;}
+        h6 { font-size: 15px; font-weight: bold;}
+        table { width: 100%; margin-bottom: 20px; border-collapse: collapse; }
+        th, td {  border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { color: #ffffff; }
+        th { background-color: #33abec; }
+        .highlight { background-color: yellow; }
+        canvas { max-width: 100%; height: auto; margin-bottom: 20px; }
+        .audit-container {
+            background-color: #f2f2f2;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .audit-container h4 {
+            margin-top: 0;
+            font-weight: bold;
+        }
+        .audit-separator {
+            border-bottom: 4px dashed #8a8a8a;
+            margin: 1rem 0;
+        }
+
+        .table {
+            width: 100%;
+            margin: 1.5rem 0;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        /* Chart Section Styles */
+        .chart-section {
+            display: flex;
+            gap: 20px;
+            margin: 30px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .chart-container-50 {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            background: #f9f9f9;
+            min-height: 400px;
+        }
+
+        .text-container-50 {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: white;
+        }
+
+        .chart-container-50 canvas {
+            max-width: 100% !important;
+            max-height: 400px !important;
+        }
+
+        .grade-header {
+            background-color: #f0f0f0;
+            padding: 10px 20px;
+            margin: 20px 0 0 0;
+            border: 1px solid #ddd;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* Grade 6 chart section exact styling from file 2 */
+        .chart-section-exact {
+            display: flex;
+            gap: 0;
+            margin: 30px 0;
+            border: 2px solid #333;
+            border-radius: 0;
+            overflow: hidden;
+            background: white;
+        }
+
+        .chart-container-exact {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            background: white;
+            border-right: 2px solid #333;
+        }
+
+        .chart-container-exact canvas {
+            max-width: 100% !important;
+            height: auto !important;
+        }
+
+        .text-container-exact {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: white;
+        }
+
+        /* Legend table style */
+        .legend-table {
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .legend-table td {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .legend-table .legend-color {
+            width: 20px;
+            height: 15px;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        /* Responsive design for charts */
+        @media (max-width: 992px) {
+            .chart-section {
+                flex-direction: column;
+            }
+            
+            .chart-container-50 {
+                border-bottom: 1px solid #ddd;
+            }
+
+            .chart-section-exact {
+                flex-direction: column;
+            }
+
+            .chart-container-exact {
+                border-right: none;
+                border-bottom: 2px solid #333;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .button {
+                margin-left: 0 !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            table {
+                font-size: 12px;
+            }
+            
+            th, td {
+                padding: 5px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            h2 {
+                font-size: 18px;
+            }
+            
+            .chart-container-50,
+            .text-container-50,
+            .chart-container-exact,
+            .text-container-exact {
+                padding: 15px;
+            }
+        }
+
+        /* Make tables responsive */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .button {
+                display: none;
+            }
+            
+            .chart-section,
+            .chart-section-exact {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+    </head>
+    <body>
+
+        <div class="report-container">
+            <header
+                class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+                <div class="header">
+                    <img src="/studentreport/content.png" alt="Logo"
+                        height="100">
+                    <button style="margin-left: 450px;" class="button"
+                        onclick="window.print()">Download</button>
+                </div>
+            </header>
+            <h1 style="margin-top: 20px;">School Performance Report: Spark
+                Olympiad</h1>
+            <p>Dear School Leader,</p>
+
+            <p>We are pleased to share the results for Spark Olympiad 2025
+                conducted by EDSSO in collaboration with Prometric.</p>
+
+            <h2>1. Subject Performance & Analysis</h2>
+            <p>This section compares the school score against the school and
+                overall test averages.</p>
+
+            <!-- Grade 6 Chart - Exact replica from file 2 -->
+            <div class="grade-header">Grade 6</div>
+            <div class="chart-section-exact">
+                <div class="chart-container-exact">
+                    <div style="width: 100%; max-width: 600px;">
+                        <canvas id="grade6Chart"></canvas>
+                        <table class="legend-table"
+                            style="width: 100%; margin-top: 15px;">
+                            <tr>
+                                <td><span class="legend-color"
+                                        style="background-color: #4472C4;"></span>School_Average</td>
+                                <td>41.67%</td>
+                                <td>36.67%</td>
+                                <td>34.89%</td>
+                                <td>41.86%</td>
+                            </tr>
+                            <tr>
+                                <td><span class="legend-color"
+                                        style="background-color: #C65911; height: 3px; margin-top: 6px;"></span>Test_Average</td>
+                                <td>55.33%</td>
+                                <td>44.52%</td>
+                                <td>42.99%</td>
+                                <td>53.17%</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="text-container-exact">
+                    <h4 style="margin-top: 0;">ACADEMIC AUDIT: EVS/Science -
+                        GRADE 6</h4>
+                    <p
+                        style="border-bottom: 2px solid #000; margin: 10px 0;"></p>
+                    <p><strong>FOCUSED IMPROVEMENT OPPORTUNITY:</strong></p>
+                    <p>Current performance trends indicate scope to strengthen
+                        alignment with national benchmarks. Additional emphasis
+                        on application-level understanding within the
+                        EVS/Science curriculum can further support student
+                        progress and confidence.</p>
+                </div>
+            </div>
+
+            <!-- Radar Chart 1 - Overall Performance Comparison -->
+            <div class="chart-section">
+                <div class="chart-container-50">
+                    <canvas id="radarChart1"></canvas>
+                </div>
+                <div class="text-container-50">
+                    <h3>Performance Overview - Grade 6</h3>
+                    <p><strong>This section compares the school score against
+                            the school and overall test averages.</strong></p>
+                    <p>The radar chart shows the school's performance across
+                        four key subject areas compared to the national test
+                        average. Areas where the blue line (School Average)
+                        falls inside the red line (Test Average) indicate
+                        opportunities for improvement.</p>
+                    <ul>
+                        <li><strong>EVS/Science:</strong> School Average 41.67%
+                            vs Test Average 55.33%</li>
+                        <li><strong>India Awareness:</strong> School Average
+                            36.67% vs Test Average 44.52%</li>
+                        <li><strong>Math:</strong> School Average 34.89% vs Test
+                            Average 42.99%</li>
+                        <li><strong>Reading:</strong> School Average 41.86% vs
+                            Test Average 53.17%</li>
+                    </ul>
+                </div>
+            </div>
+
+            <canvas id="performanceChart"></canvas>
+
+            <!-- All Grades Performance Chart -->
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>School</th>
+                            <th>grade</th>
+                            <th>Subject</th>
+                            <th>School Average</th>
+                            <th>Test Average</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Pinegrove School Dharampur</td>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>41.67</td>
+                            <td>55.33</td>
+                        </tr>
+                        <tr>
+                            <td>Pinegrove School Dharampur</td>
+                            <td>6</td>
+                            <td>India Awareness</td>
+                            <td>36.67</td>
+                            <td>44.52</td>
+                        </tr>
+                        <tr>
+                            <td>Pinegrove School Dharampur</td>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>34.89</td>
+                            <td>42.99</td>
+                        </tr>
+                        <tr>
+                            <td>Pinegrove School Dharampur</td>
+                            <td>6</td>
+                            <td>Reading</td>
+                            <td>41.86</td>
+                            <td>53.17</td>
+                        </tr>
+                        <tr>
+                            <td>Pinegrove School Dharampur</td>
+                            <td>7</td>
+                            <td>EVS/Science</td>
+                            <td>42.3</td>
+                            <td>54.75</td>
+                        </tr>
+                        <tr>
+                            <td>Pinegrove School Dharampur</td>
+                            <td>7</td>
+                            <td>India Awareness</td>
+                            <td>32.85</td>
+                            <td>42.37</td>
+                        </tr>
+                        <tr>
+                            <td>Pinegrove School Dharampur</td>
+                            <td>7</td>
+                            <td>Math</td>
+                            <td>37.68</td>
+                            <td>47.65</td>
+                        </tr>
+                        <tr>
+                            <td>Pinegrove School Dharampur</td>
+                            <td>7</td>
+                            <td>Reading</td>
+                            <td>37.15</td>
+                            <td>49.32</td>
+                        </tr>
+                        <tr>
+                            <td>Pinegrove School Dharampur</td>
+                            <td>8</td>
+                            <td>EVS/Science</td>
+                            <td>54.58</td>
+                            <td>60.77</td>
+                        </tr>
+                        <tr>
+                            <td>Pinegrove School Dharampur</td>
+                            <td>8</td>
+                            <td>India Awareness</td>
+                            <td>33.86</td>
+                            <td>38.22</td>
+                        </tr>
+                        <tr>
+                            <td>Pinegrove School Dharampur</td>
+                            <td>8</td>
+                            <td>Math</td>
+                            <td>50.75</td>
+                            <td>54.07</td>
+                        </tr>
+                        <tr>
+                            <td>Pinegrove School Dharampur</td>
+                            <td>8</td>
+                            <td>Reading</td>
+                            <td>41.06</td>
+                            <td>48.42</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Subject Analysis:</h2><br>
+            <h4>Grade 6 - EVS/Science:</h4>
+            <div class="audit-container">
+
+                <p>ACADEMIC AUDIT: EVS/Science - GRADE 6</p>
+                <p class="audit-separator"></p>
+                <p>1. PERFORMANCE METRICS:</p>
+                <ul>
+                    <li>School Average: 41.7%</li>
+                    <li>National Average: 55.3%</li>
+                    <li>Competitive Variance: -13.7%</li>
+                </ul>
+                <p>2. LEARNING INSIGHTS:</p>
+                <p>FOCUSED IMPROVEMENT OPPORTUNITY: Current performance trends
+                    indicate scope to strengthen alignment with national
+                    benchmarks. Additional emphasis on application-level
+                    understanding within the EVS/Science curriculum can further
+                    support student progress and confidence.</p>
+                <p>3. ACADEMIC GUIDANCE & SUGGESTED ACTIONS:</p>
+                <ul>
+                    <li>Conduct an 'Error Analysis' session with students to
+                        identify common traps.</li>
+                    <li>Re-align the teaching of EVS/Science to focus more on
+                        'Why' and 'How' rather than 'What'.</li>
+                </ul>
+                <p>4. STRATEGIC SUPPORT PLAN (Next 90 Days)</p>
+                <ol>
+                    <li>GUIDED ERROR REVIEW: Facilitated review sessions can
+                        help identify whether student errors are primarily
+                        conceptual or calculation-based, enabling more targeted
+                        instructional support.</li>
+                    <li>FOUNDATIONAL SKILL REINFORCEMENT Short, focused practice
+                        sessions (approximately 20 minutes daily or weekly) on
+                        core fundamentals in EVS/Science can support steady
+                        improvement and confidence building.</li>
+                </ol>
+                <p>5. Suggested ACADEMIC Action Plan:</p>
+                <ul>
+                    <li>A focused review of EVS/Science sub-topics with
+                        comparatively lower performance can help identify
+                        specific learning needs.</li>
+                    <li>A short-term, structured reinforcement phase
+                        (approximately 4 weeks) on core fundamentals can support
+                        students in building confidence and consistency.</li>
+                </ul>
+                <p>Generated by: Academic Analytics Department</p>
+            </div>
+
+            <h4>Grade 6 - India Awareness</h4>
+            <div class="audit-container">
+                <p>ACADEMIC AUDIT: India Awareness - GRADE 6</p>
+                <p class="audit-separator"></p>
+                <p>1. PERFORMANCE METRICS:</p>
+                <ul>
+                    <li>School Average: 36.7%</li>
+                    <li>National Average: 44.5%</li>
+                    <li>Competitive Variance: -7.9%</li>
+                </ul>
+                <p>2. LEARNING INSIGHTS:</p>
+                <p>FOCUSED IMPROVEMENT OPPORTUNITY: Current performance trends
+                    indicate scope to strengthen alignment with national
+                    benchmarks. Additional emphasis on application-level
+                    understanding within the India Awareness curriculum can
+                    further support student progress and confidence.</p>
+                <p>3. ACADEMIC GUIDANCE & SUGGESTED ACTIONS:</p>
+                <ul>
+                    <li>Conduct an 'Error Analysis' session with students to
+                        identify common traps.</li>
+                    <li>Re-align the teaching of India Awareness to focus more
+                        on 'Why' and 'How' rather than 'What'.</li>
+                </ul>
+                <p>4. STRATEGIC SUPPORT PLAN (Next 90 Days)</p>
+                <ol>
+                    <li>GUIDED ERROR REVIEW: Facilitated review sessions can
+                        help identify whether student errors are primarily
+                        conceptual or calculation-based, enabling more targeted
+                        instructional support.</li>
+                    <li>FOUNDATIONAL SKILL REINFORCEMENT Short, focused practice
+                        sessions (approximately 20 minutes daily or weekly) on
+                        core fundamentals in India Awareness can support steady
+                        improvement and confidence building.</li>
+                </ol>
+                <p>5. ACADEMIC Action Plan:</p>
+                <ul>
+                    <li>A focused review of India Awareness sub-topics with
+                        comparatively lower performance can help identify
+                        specific learning needs.</li>
+                    <li>A short-term, structured reinforcement phase
+                        (approximately 4 weeks) on core fundamentals can support
+                        students in building confidence and consistency."</li>
+                </ul>
+                <p>Generated by: Academic Analytics Department</p>
+            </div>
+
+            <h4>Grade 6 - Math:</h4>
+            <div class="audit-container">
+                <p>ACADEMIC AUDIT: Math - GRADE 6</p>
+                <p class="audit-separator"></p>
+                <p>1. PERFORMANCE METRICS:</p>
+                <ul>
+                    <li>School Average: 34.9%</li>
+                    <li>National Average: 43.0%</li>
+                    <li>Competitive Variance: -8.1%</li>
+                </ul>
+                <p>2. LEARNING INSIGHTS:</p>
+                <p>FOCUSED IMPROVEMENT OPPORTUNITY: Current performance trends
+                    indicate scope to strengthen alignment with national
+                    benchmarks. Additional emphasis on application-level
+                    understanding within the Math curriculum can further support
+                    student progress and confidence.</p>
+                <p>3. ACADEMIC GUIDANCE & SUGGESTED ACTIONS:</p>
+                <ul>
+                    <li>Conduct an 'Error Analysis' session with students to
+                        identify common traps.</li>
+                    <li>Re-align the teaching of Math to focus more on 'Why' and
+                        'How' rather than 'What'.</li>
+                </ul>
+                <p>4. STRATEGIC SUPPORT PLAN (Next 90 Days)</p>
+                <ul>
+                    <li>GUIDED ERROR REVIEW: Facilitated review sessions can
+                        help identify whether student errors are primarily
+                        conceptual or calculation-based, enabling more targeted
+                        instructional support.</li>
+                    <li>FOUNDATIONAL SKILL REINFORCEMENT Short, focused practice
+                        sessions (approximately 20 minutes daily or weekly) on
+                        core fundamentals in Math can support steady improvement
+                        and confidence building.</li>
+                </ul>
+                <p>5. ACADEMIC Action Plan:</p>
+                <ul>
+                    <li>A focused review of Math sub-topics with comparatively
+                        lower performance can help identify specific learning
+                        needs.</li>
+                    <li>A short-term, structured reinforcement phase
+                        (approximately 4 weeks) on core fundamentals can support
+                        students in building confidence and consistency."</li>
+                </ul>
+                <p>Generated by: Academic Analytics Department</p>
+            </div>
+
+            <h4>Grade 6 - English/Reading:</h4>
+            <div class="audit-container">
+                <p>ACADEMIC AUDIT: English/Reading - GRADE 6</p>
+                <p class="audit-separator"></p>
+                <p>1. PERFORMANCE METRICS:</p>
+                <ul>
+                    <li>School Average: 41.9%</li>
+                    <li>National Average: 53.2%</li>
+                    <li>Competitive Variance: -11.3%</li>
+                </ul>
+                <p>2. LEARNING INSIGHTS:</p>
+                <p>FOCUSED IMPROVEMENT OPPORTUNITY: Current performance trends
+                    indicate scope to strengthen alignment with national
+                    benchmarks. Additional emphasis on application-level
+                    understanding within the Reading curriculum can further
+                    support student progress and confidence.</p>
+                <p>3. ACADEMIC GUIDANCE & SUGGESTED ACTIONS:</p>
+                <ul>
+                    <li>Conduct an 'Error Analysis' session with students to
+                        identify common traps.</li>
+                    <li>Re-align the teaching of Reading to focus more on 'Why'
+                        and 'How' rather than 'What'.</li>
+                </ul>
+                <p>4. STRATEGIC SUPPORT PLAN (Next 90 Days)</p>
+                <ul>
+                    <li>GUIDED ERROR REVIEW: Facilitated review sessions can
+                        help identify whether student errors are primarily
+                        conceptual or calculation-based, enabling more targeted
+                        instructional support.</li>
+                    <li>FOUNDATIONAL SKILL REINFORCEMENT: Short, focused
+                        practice sessions (approximately 20 minutes daily or
+                        weekly) on core fundamentals in Reading can support
+                        steady improvement and confidence building.</li>
+                </ul>
+                <p>5. ACADEMIC Action Plan:</p>
+                <ul>
+                    <li>A focused review of Reading sub-topics with
+                        comparatively lower performance can help identify
+                        specific learning needs.</li>
+                    <li>A short-term, structured reinforcement phase
+                        (approximately 4 weeks) on core fundamentals can support
+                        students in building confidence and consistency.</li>
+                </ul>
+                <p>Generated by: Academic Analytics Department</p>
+            </div>
+
+            <h4>Grade 7 - EVS/Science:</h4>
+            <div class="audit-container">
+                <p>ACADEMIC AUDIT: EVS/Science - GRADE 7</p>
+                <p class="audit-separator"></p>
+                <p>1. PERFORMANCE METRICS:</p>
+                <ul>
+                    <li>School Average: 42.3%</li>
+                    <li>National Average: 54.8%</li>
+                    <li>Competitive Variance: -12.5%</li>
+                </ul>
+                <p>2. LEARNING INSIGHTS:</p>
+                <p>FOCUSED IMPROVEMENT OPPORTUNITY: Current performance trends
+                    indicate scope to strengthen alignment with national
+                    benchmarks. Additional emphasis on application-level
+                    understanding within the EVS/Science curriculum can further
+                    support student progress and confidence.</p>
+                <p>3. ACADEMIC GUIDANCE & SUGGESTED ACTIONS:</p>
+                <ul>
+                    <li>Conduct an 'Error Analysis' session with students to
+                        identify common traps.</li>
+                    <li>Re-align the teaching of EVS/Science to focus more on
+                        'Why' and 'How' rather than 'What'.</li>
+                </ul>
+                <p>4. STRATEGIC SUPPORT PLAN (Next 90 Days)</p>
+                <p>GUIDED ERROR REVIEW: Facilitated review sessions can help
+                    identify whether student errors are primarily conceptual or
+                    calculation-based, enabling more targeted instructional
+                    support.</p>
+                <p>FOUNDATIONAL SKILL REINFORCEMENT:Short, focused practice
+                    sessions (approximately 20 minutes daily or weekly) on core
+                    fundamentals in EVS/Science can support steady improvement
+                    and confidence building.</p>
+                <p>5. ACADEMIC Action Plan:</p>
+                <ul>
+                    <li>A focused review of EVS/Science sub-topics with
+                        comparatively lower performance can help identify
+                        specific learning needs.</li>
+                    <li>A short-term, structured reinforcement phase
+                        (approximately 4 weeks) on core fundamentals can support
+                        students in building confidence and consistency.</li>
+                </ul>
+                <p>Generated by: Academic Analytics Department</p>
+            </div>
+
+            <h4>Grade 7 - India Awareness</h4>
+            <div class="audit-container">
+                <p>ACADEMIC AUDIT: India Awareness - GRADE 7</p>
+                <p class="audit-separator"></p>
+                <p>1. PERFORMANCE METRICS:</p>
+                <ul>
+                    <li>School Average: 32.9%</li>
+                    <li>National Average: 42.4%</li>
+                    <li>Competitive Variance: -9.5%</li>
+                </ul>
+                <p>2. LEARNING INSIGHTS:</p>
+                <p>FOCUSED IMPROVEMENT OPPORTUNITY: Current performance trends
+                    indicate scope to strengthen alignment with national
+                    benchmarks. Additional emphasis on application-level
+                    understanding within the India Awareness curriculum can
+                    further support student progress and confidence.</p>
+                <p>3. ACADEMIC GUIDANCE & SUGGESTED ACTIONS:</p>
+                <ul>
+                    <li>Conduct an 'Error Analysis' session with students to
+                        identify common traps.</li>
+                    <li>Re-align the teaching of India Awareness to focus more
+                        on 'Why' and 'How' rather than 'What'.</li>
+                </ul>
+                <p>4. STRATEGIC SUPPORT PLAN (Next 90 Days)</p>
+                <ul>
+                    <li>GUIDED ERROR REVIEW: Facilitated review sessions can
+                        help identify whether student errors are primarily
+                        conceptual or calculation-based, enabling more targeted
+                        instructional support.</li>
+                    <li>FOUNDATIONAL SKILL REINFORCEMENT: Short, focused
+                        practice sessions (approximately 20 minutes daily or
+                        weekly) on core fundamentals in India Awareness can
+                        support steady improvement and confidence building.</li>
+                </ul>
+                <p>5. ACADEMIC Action Plan:</p>
+                <ul>
+                    <li>A focused review of India Awareness sub-topics with
+                        comparatively lower performance can help identify
+                        specific learning needs.</li>
+                    <li>A short-term, structured reinforcement phase
+                        (approximately 4 weeks) on core fundamentals can support
+                        students in building confidence and consistency."</li>
+                </ul>
+                <p>Generated by: Academic Analytics Department</p>
+            </div>
+
+            <h4>Grade 7 - Math:</h4>
+            <div class="audit-container">
+                <p>ACADEMIC AUDIT: Math - GRADE 7</p>
+                <p class="audit-separator"></p>
+                <p>1. PERFORMANCE METRICS:</p>
+                <ul>
+                    <li>School Average: 37.7%</li>
+                    <li>National Average: 47.7%</li>
+                    <li>Competitive Variance: -10.0%</li>
+                </ul>
+                <p>2. LEARNING INSIGHTS:</p>
+                <p>FOCUSED IMPROVEMENT OPPORTUNITY: Current performance trends
+                    indicate scope to strengthen alignment with national
+                    benchmarks. Additional emphasis on application-level
+                    understanding within the Math curriculum can further support
+                    student progress and confidence.</p>
+                <p>3. ACADEMIC GUIDANCE & SUGGESTED ACTIONS:</p>
+                <ul>
+                    <li>Conduct an 'Error Analysis' session with students to
+                        identify common traps.</li>
+                    <li>Re-align the teaching of Math to focus more on 'Why' and
+                        'How' rather than 'What'.</li>
+                </ul>
+                <p>4. III. STRATEGIC SUPPORT PLAN (Next 90 Days)</p>
+                <ol>
+                    <li>GUIDED ERROR REVIEW: Facilitated review sessions can
+                        help identify whether student errors are primarily
+                        conceptual or calculation-based, enabling more targeted
+                        instructional support.</li>
+                    <li>FOUNDATIONAL SKILL REINFORCEMENT Short, focused practice
+                        sessions (approximately 20 minutes daily or weekly) on
+                        core fundamentals in Math can support steady improvement
+                        and confidence building.</li>
+                </ol>
+                <p>5. ACADEMIC Action Plan:</p>
+                <ul>
+                    <li>A focused review of Math sub-topics with comparatively
+                        lower performance can help identify specific learning
+                        needs.</li>
+                    <li>A short-term, structured reinforcement phase
+                        (approximately 4 weeks) on core fundamentals can support
+                        students in building confidence and consistency."</li>
+                </ul>
+                <p>Generated by: Academic Analytics Department</p>
+            </div>
+
+            <h4>Grade 7 - English/Reading:</h4>
+            <div class="audit-container">
+                <p>ACADEMIC AUDIT: English/Reading - GRADE 7</p>
+                <p class="audit-separator"></p>
+                <p>1. PERFORMANCE METRICS:</p>
+                <ul>
+                    <li>School Average: 37.2%</li>
+                    <li>National Average: 49.3%</li>
+                    <li>Competitive Variance: -12.2%</li>
+                </ul>
+                <p>2. LEARNING INSIGHTS:</p>
+                <p>FOCUSED IMPROVEMENT OPPORTUNITY: Current performance trends
+                    indicate scope to strengthen alignment with national
+                    benchmarks. Additional emphasis on application-level
+                    understanding within the Reading curriculum can further
+                    support student progress and confidence.</p>
+                <p>3. ACADEMIC GUIDANCE & SUGGESTED ACTIONS:</p>
+                <ul>
+                    <li>Conduct an 'Error Analysis' session with students to
+                        identify common traps.</li>
+                    <li>Re-align the teaching of Reading to focus more on 'Why'
+                        and 'How' rather than 'What'.</li>
+                </ul>
+                <p>4. STRATEGIC SUPPORT PLAN (Next 90 Days)</p>
+                <ul>
+                    <li>GUIDED ERROR REVIEW: Facilitated review sessions can
+                        help identify whether student errors are primarily
+                        conceptual or calculation-based, enabling more targeted
+                        instructional support.</li>
+                    <li>FOUNDATIONAL SKILL REINFORCEMENT: Short, focused
+                        practice sessions (approximately 20 minutes daily or
+                        weekly) on core fundamentals in Reading can support
+                        steady improvement and confidence building.</li>
+                </ul>
+                <p>5. ACADEMIC Action Plan:</p>
+                <ul>
+                    <li>A focused review of Reading sub-topics with
+                        comparatively lower performance can help identify
+                        specific learning needs.</li>
+                    <li>A short-term, structured reinforcement phase
+                        (approximately 4 weeks) on core fundamentals can support
+                        students in building confidence and consistency.</li>
+                </ul>
+                <p>Generated by: Academic Analytics Department</p>
+            </div>
+
+            <h4>Grade 8 - EVS/Science:</h4>
+            <div class="audit-container">
+                <p>ACADEMIC AUDIT: EVS/Science - GRADE 8</p>
+                <p class="audit-separator"></p>
+                <p>1. PERFORMANCE METRICS:</p>
+                <ul>
+                    <li>School Average: 54.6%</li>
+                    <li>National Average: 60.8%</li>
+                    <li>Competitive Variance: -6.2%</li>
+                </ul>
+                <p>2. LEARNING INSIGHTS:</p>
+                <p>FOCUSED IMPROVEMENT OPPORTUNITY: Current performance trends
+                    indicate scope to strengthen alignment with national
+                    benchmarks. Additional emphasis on application-level
+                    understanding within the EVS/Science curriculum can further
+                    support student progress and confidence.</p>
+                <p>3. ACADEMIC GUIDANCE & SUGGESTED ACTIONS:</p>
+                <ul>
+                    <li>Conduct an 'Error Analysis' session with students to
+                        identify common traps.</li>
+                    <li>Re-align the teaching of EVS/Science to focus more on
+                        'Why' and 'How' rather than 'What'.</li>
+                </ul>
+                <p>4. STRATEGIC SUPPORT PLAN (Next 90 Days)</p>
+                <ul>
+                    <li>GUIDED ERROR REVIEW: Facilitated review sessions can
+                        help identify whether student errors are primarily
+                        conceptual or calculation-based, enabling more targeted
+                        instructional support.</li>
+                    <li>FOUNDATIONAL SKILL REINFORCEMENT: Short, focused
+                        practice sessions (approximately 20 minutes daily or
+                        weekly) on core fundamentals in EVS/Science can support
+                        steady improvement and confidence building.</li>
+                </ul>
+                <p>5. ACADEMIC Action Plan:</p>
+                <ul>
+                    <li>A focused review of EVS/Science sub-topics with
+                        comparatively lower performance can help identify
+                        specific learning needs.</li>
+                    <li>A short-term, structured reinforcement phase
+                        (approximately 4 weeks) on core fundamentals can support
+                        students in building confidence and consistency.</li>
+                </ul>
+                <p>Generated by: Academic Analytics Department</p>
+            </div>
+
+            <h4>Grade 8 - India Awareness</h4>
+            <div class="audit-container">
+                <p>ACADEMIC AUDIT: India Awareness - GRADE 8</p>
+                <p class="audit-separator"></p>
+                <p>1. PERFORMANCE METRICS:</p>
+                <ul>
+                    <li>School Average: 33.9%</li>
+                    <li>National Average: 38.2%</li>
+                    <li>Competitive Variance: -4.4%</li>
+                </ul>
+                <p>2. LEARNING INSIGHTS:</p>
+                <p>CONSISTENT PERFORMANCE: The school's performance aligns
+                    closely with national trends, indicating stable learning
+                    outcomes. To progress toward higher levels of achievement,
+                    gradual exposure to more complex and non-routine
+                    problem-solving tasks will be beneficial.</p>
+                <p>3. ACADEMIC GUIDANCE & SUGGESTED ACTIONS:</p>
+                <ul>
+                    <li>Conduct an 'Error Analysis' session with students to
+                        identify common traps.</li>
+                    <li>Re-align the teaching of India Awareness to focus more
+                        on 'Why' and 'How' rather than 'What'.</li>
+                </ul>
+                <p>4. STRATEGIC SUPPORT PLAN (Next 90 Days)</p>
+                <ul>
+                    <li>GUIDED ERROR REVIEW: Facilitated review sessions can
+                        help identify whether student errors are primarily
+                        conceptual or calculation-based, enabling more targeted
+                        instructional support.</li>
+                    <li>FOUNDATIONAL SKILL REINFORCEMENT: Short, focused
+                        practice sessions (approximately 20 minutes daily or
+                        weekly) on core fundamentals in India Awareness can
+                        support steady improvement and confidence building.</li>
+                </ul>
+                <p>5. ACADEMIC Action Plan:</p>
+                <ul>
+                    <li>A focused review of India Awareness sub-topics with
+                        comparatively lower performance can help identify
+                        specific learning needs.</li>
+                    <li>A short-term, structured reinforcement phase
+                        (approximately 4 weeks) on core fundamentals can support
+                        students in building confidence and consistency.</li>
+                </ul>
+                <p>Generated by: Academic Analytics Department</p>
+            </div>
+
+            <h4>Grade 8 - Math:</h4>
+            <div class="audit-container">
+                <p>ACADEMIC AUDIT: Math - GRADE 8</p>
+                <p class="audit-separator"></p>
+                <p>1. PERFORMANCE METRICS:</p>
+                <ul>
+                    <li>School Average: 50.8%</li>
+                    <li>National Average: 54.1%</li>
+                    <li>Competitive Variance: -3.3%</li>
+                </ul>
+                <p>2. LEARNING INSIGHTS:</p>
+                <p>CONSISTENT PERFORMANCE: The school's performance aligns
+                    closely with national trends, indicating stable learning
+                    outcomes. To progress toward higher levels of achievement,
+                    gradual exposure to more complex and non-routine
+                    problem-solving tasks will be beneficial.</p>
+                <p>3. ACADEMIC GUIDANCE & SUGGESTED ACTIONS:</p>
+                <ul>
+                    <li>Conduct an 'Error Analysis' session with students to
+                        identify common traps.</li>
+                    <li>Re-align the teaching of Math to focus more on 'Why' and
+                        'How' rather than 'What'.</li>
+                </ul>
+                <p>4.STRATEGIC SUPPORT PLAN (Next 90 Days)</p>
+                <ul>
+                    <li>GUIDED ERROR REVIEW: Facilitated review sessions can
+                        help identify whether student errors are primarily
+                        conceptual or calculation-based, enabling more targeted
+                        instructional support.</li>
+                    <li>FOUNDATIONAL SKILL REINFORCEMENT: Short, focused
+                        practice sessions (approximately 20 minutes daily or
+                        weekly) on core fundamentals in Math can support steady
+                        improvement and confidence building.</li>
+                </ul>
+                <p>5. ACADEMIC Action Plan:</p>
+                <ul>
+                    <li>A focused review of Math sub-topics with comparatively
+                        lower performance can help identify specific learning
+                        needs.</li>
+                    <li>A short-term, structured reinforcement phase
+                        (approximately 4 weeks) on core fundamentals can support
+                        students in building confidence and consistency.</li>
+                </ul>
+                <p>Generated by: Academic Analytics Department</p>
+            </div>
+
+            <h4>Grade 8 - English/Reading:</h4>
+            <div class="audit-container">
+                <p>ACADEMIC AUDIT: Reading - GRADE 8</p>
+                <p class="audit-separator"></p>
+                <p>1. PERFORMANCE METRICS:</p>
+                <ul>
+                    <li>School Average: 41.1%</li>
+                    <li>National Average: 48.4%</li>
+                    <li>Competitive Variance: -7.4%</li>
+                </ul>
+                <p>2. LEARNING INSIGHTS:</p>
+                <p>FOCUSED IMPROVEMENT OPPORTUNITY: Current performance trends
+                    indicate scope to strengthen alignment with national
+                    benchmarks. Additional emphasis on application-level
+                    understanding within the Reading curriculum can further
+                    support student progress and confidence.</p>
+                <p>3. ACADEMIC GUIDANCE & SUGGESTED ACTIONS:</p>
+                <ul>
+                    <li>Conduct an 'Error Analysis' session with students to
+                        identify common traps.</li>
+                    <li>Re-align the teaching of Reading to focus more on 'Why'
+                        and 'How' rather than 'What'.</li>
+                </ul>
+                <p>4. STRATEGIC SUPPORT PLAN (Next 90 Days)</p>
+                <ul>
+                    <li>GUIDED ERROR REVIEW: Facilitated review sessions can
+                        help identify whether student errors are primarily
+                        conceptual or calculation-based, enabling more targeted
+                        instructional support.</li>
+                    <li>FOUNDATIONAL SKILL REINFORCEMENT:Short, focused practice
+                        sessions (approximately 20 minutes daily or weekly) on
+                        core fundamentals in Reading can support steady
+                        improvement and confidence building.</li>
+                </ul>
+                <p>5. Action Plan:</p>
+                <ul>
+                    <li>A focused review of Reading sub-topics with
+                        comparatively lower performance can help identify
+                        specific learning needs.</li>
+                    <li>A short-term, structured reinforcement phase
+                        (approximately 4 weeks) on core fundamentals can support
+                        students in building confidence and consistency.</li>
+                </ul>
+                <p>Generated by: Academic Analytics Department</p>
+            </div>
+
+            <h2>3. Competency-Wise Performance - Grade 6</h2>
+            <p>This section breaks down performance by specific skills within
+                each subject.</p>
+
+            <!-- Competency Radar Chart -->
+            <div class="chart-section">
+                <div class="chart-container-50">
+                    <canvas id="competencyRadarChart"></canvas>
+                </div>
+                <div class="text-container-50">
+                    <h3>How to Interpret the Radar Chart</h3>
+                    <p class="audit-separator"></p>
+                    <p><strong>Strengths</strong></p>
+                    <ul>
+                        <li>Indicators where the school's line is
+                            <strong>outside</strong> the national line.</li>
+                        <li>Consistently high points across multiple axes.</li>
+                    </ul>
+                    <p><strong>Areas for Improvement</strong></p>
+                    <ul>
+                        <li>Indicators where the school's line dips
+                            <strong>inside</strong> the national average.</li>
+                        <li>Sharp inward dips that show specific sub-skills
+                            needing attention.</li>
+                    </ul>
+                    <p><strong>Performance Pattern</strong></p>
+                    <ul>
+                        <li>A broad, balanced shape suggests <strong>uniform
+                                competency development</strong>.</li>
+                        <li>An uneven shape highlights <strong>specific
+                                gaps</strong> that can guide instructional
+                            planning.</li>
+                    </ul>
+                    <p><strong>How to Use This Information</strong></p>
+                    <ul>
+                        <li>Identify sub-skills that require <strong>targeted
+                                teaching strategies</strong>.</li>
+                        <li>Plan <strong>interventions</strong> for students who
+                            need additional support.</li>
+                        <li>Celebrate and reinforce <strong>areas of strong
+                                performance</strong>.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Grade 6 - Competency based Highlights :</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>grade_id</th>
+                            <th>subject_name</th>
+                            <th>Competency</th>
+                            <th>Competency Description</th>
+                            <th>School Competency Average</th>
+                            <th>Test Competency Average</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>6.C-1.2</td>
+                            <td>Describes changes in matter (physical and
+                                chemical)
+                                and uses particulate nature to represent the
+                                properties of matter and the changes.</td>
+                            <td>33.61%</td>
+                            <td>49.53%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>6.C-1.4</td>
+                            <td>Observes and explains the phenomena caused due
+                                to
+                                differences in pressure, temperature, and
+                                density
+                                (e.g., breathing, sinking-floating, water pumps
+                                in
+                                homes, cooling of things, formation of
+                                winds).</td>
+                            <td>45.00%</td>
+                            <td>49.24%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>6.C-2.1</td>
+                            <td>Describes one-dimensional motion (uniform,
+                                non-uniform, horizontal, vertical) using
+                                physical
+                                measurements (position, speed, and changes in
+                                speed)
+                                through mathematical and diagrammatic
+                                representations.</td>
+                            <td>30.00%</td>
+                            <td>49.86%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>6.C-2.2</td>
+                            <td>Describes how electricity works through
+                                manipulating
+                                different elements in simple circuits and
+                                demonstrates the heating and magnetic effects of
+                                electricity.</td>
+                            <td>31.11%</td>
+                            <td>41.91%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>6.C-2.5</td>
+                            <td>Observes and identifies celestial objects
+                                (stars,
+                                planets, natural and artificial satellites,
+                                constellations, comets) in the night sky using a
+                                simple telescope and images/ photographs, and
+                                explains their role in navigation, calendars,
+                                and
+                                other phenomena</td>
+                            <td>39.17%</td>
+                            <td>44.12%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>6.C-3.1</td>
+                            <td>Describes the diversity of living things
+                                observed in
+                                the natural surroundings (insects, earthworms,
+                                snails, birds, mammals, reptiles, spiders,
+                                diverse
+                                plants, and fungi), including at a smaller scale
+                                (microscopic organisms).</td>
+                            <td>53.89%</td>
+                            <td>69.12%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>6.C-3.2</td>
+                            <td>Distinguishes the characteristics of living
+                                organisms (need for nutrition, growth and
+                                development, need for respiration, response to
+                                stimuli, reproduction, excretion, cellular
+                                organisation) from non-living things.</td>
+                            <td>40.00%</td>
+                            <td>44.31%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>6.C-3.3</td>
+                            <td>Analyses patterns of relationships between
+                                living
+                                organisms and their environments in terms of
+                                dependence on and response to each other.</td>
+                            <td>28.33%</td>
+                            <td>53.06%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>6.C-4.1</td>
+                            <td>Understand the importance of hygiene and
+                                sanitation
+                                for health</td>
+                            <td>51.67%</td>
+                            <td>55.19%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>6.C-4.2</td>
+                            <td>Examines different dimensions of diversity of
+                                food —
+                                sources, nutrients, climatic conditions, and
+                                diets.</td>
+                            <td>54.52%</td>
+                            <td>68.37%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>6.C-4.3</td>
+                            <td>Describes biological changes (growth, hormonal)
+                                during adolescence, and measures to ensure
+                                overall
+                                well-being.</td>
+                            <td>47.08%</td>
+                            <td>59.90%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>6.C-5.1</td>
+                            <td>Illustrates how Science and Technology can help
+                                to
+                                improve the quality of human life (health care,
+                                communication, transportation, food security,
+                                mitigation of climate change, judicious
+                                consumption
+                                of resources, applications of artificial
+                                satellites)
+                                as we</td>
+                            <td>43.33%</td>
+                            <td>65.87%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>6.C-5.2</td>
+                            <td>Shares views on news and articles related to the
+                                impact that Science/Technology and society have
+                                on
+                                each other.</td>
+                            <td>43.33%</td>
+                            <td>61.08%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>6.C-6.1</td>
+                            <td>Illustrates how scientific knowledge and ideas
+                                have
+                                changed over time (description of the motion of
+                                objects and planets, spontaneous generation of
+                                life,
+                                number of planets) and identifies the scientific
+                                values that are inherent and common across the
+                                evolut</td>
+                            <td>26.67%</td>
+                            <td>50.30%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>6.C-6.2</td>
+                            <td>Formulates questions using scientific
+                                terminology
+                                (to identify possible causes for an event,
+                                patterns,
+                                or behaviour of objects) and collects data as
+                                evidence (through observation of the natural
+                                environment, design of simple experiments, or
+                                use of
+                                simple s)</td>
+                            <td>32.50%</td>
+                            <td>46.32%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>6.C-7.1</td>
+                            <td>Uses scientific vocabulary to communicate
+                                Science
+                                accurately in oral and written form, and through
+                                visual representation.</td>
+                            <td>41.67%</td>
+                            <td>56.95%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>6.C-8.1</td>
+                            <td>Knows and explains the significant contributions
+                                of
+                                India to all matters (concepts, explanations,
+                                methods) that are studied within the curriculum
+                                in
+                                an integrated manner.</td>
+                            <td>34.17%</td>
+                            <td>54.04%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>6.C-9.1</td>
+                            <td>States concepts that represent the most current
+                                understanding of the matter being studied —
+                                ranging
+                                from mere familiarity to conceptual
+                                understanding of
+                                the matter as appropriate to the developmental
+                                stage
+                                of the students.</td>
+                            <td>40.42%</td>
+                            <td>47.10%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>EVS/Science</td>
+                            <td>6.C-9.2</td>
+                            <td>States questions related to matters in the
+                                curriculum for which current scientific
+                                understanding is well-recognised to be
+                                inadequate.</td>
+                            <td>46.67%</td>
+                            <td>48.57%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>India Awareness</td>
+                            <td>6.C-1.1</td>
+                            <td>Explains the significance of national symbols,
+                                commemorative days, and constitutional ideals in
+                                shaping Indian identity.</td>
+                            <td>45.34%</td>
+                            <td>48.84%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>India Awareness</td>
+                            <td>6.C-1.2</td>
+                            <td>Evaluates civic actions and public behaviours in
+                                everyday contexts using principles of justice,
+                                equality, and fraternity.</td>
+                            <td>37.85%</td>
+                            <td>42.09%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>India Awareness</td>
+                            <td>6.C-2.1</td>
+                            <td>Compares cultural, linguistic, and artistic
+                                expressions across Indian regions and relates
+                                them
+                                to historical, geographical, or social
+                                contexts.</td>
+                            <td>40.54%</td>
+                            <td>50.84%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>India Awareness</td>
+                            <td>6.C-2.2</td>
+                            <td>Recognises traditional ecological knowledge and
+                                environmental practices in India and assesses
+                                their
+                                value for sustainability today.</td>
+                            <td>33.05%</td>
+                            <td>44.57%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>India Awareness</td>
+                            <td>6.C-3.1</td>
+                            <td>Connects the actions and ideas of Indian
+                                historical
+                                figures, reformers, or institutions with the
+                                societal changes they inspired.</td>
+                            <td>25.76%</td>
+                            <td>36.77%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>India Awareness</td>
+                            <td>6.C-3.2</td>
+                            <td>Interprets moral messages, values, or themes
+                                from
+                                Indian stories, movements, or traditions and
+                                relates
+                                them to current issues or contexts.</td>
+                            <td>34.09%</td>
+                            <td>42.68%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-1.1</td>
+                            <td>Develops a sense for and an ability to
+                                manipulate
+                                (e.g., read, write, form, compare, estimate, and
+                                apply operations) and name (in words) large
+                                whole
+                                numbers of up to 20 digits, and expresses them
+                                in
+                                scientific notation using exponents and
+                                powers.</td>
+                            <td>43.55%</td>
+                            <td>54.46%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-1.2</td>
+                            <td>Discovers, identifies, and explores patterns in
+                                numbers and describes rules for their formation
+                                (e.g., multiples of 7, powers of 3, prime
+                                numbers),
+                                and explains relations between different
+                                patterns.</td>
+                            <td>35.48%</td>
+                            <td>41.89%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-1.4</td>
+                            <td>Explores and understands sets of numbers, such
+                                as
+                                whole numbers, fractions, integers, rational
+                                numbers, and real numbers, and their properties,
+                                and
+                                visualises them on the number line.</td>
+                            <td>24.19%</td>
+                            <td>42.70%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-1.5</td>
+                            <td>Explores the idea of percentage and applies it
+                                to
+                                solve problems.</td>
+                            <td>34.41%</td>
+                            <td>41.08%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-2.3</td>
+                            <td>Forms algebraic expressions using variables,
+                                coefficients, and constants and manipulates them
+                                through basic operations.</td>
+                            <td>22.58%</td>
+                            <td>32.54%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-2.4</td>
+                            <td>Poses and solves linear equations to find the
+                                value
+                                of an unknown, including to solve puzzles and
+                                word
+                                problems.</td>
+                            <td>33.87%</td>
+                            <td>50.27%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-2.5</td>
+                            <td>Develops own methods to solve puzzles and
+                                problems
+                                using algebraic thinking.</td>
+                            <td>28.39%</td>
+                            <td>36.43%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-3.1</td>
+                            <td>Describes, classifies, and understands
+                                relationships
+                                among different types of two- and
+                                three-dimensional
+                                shapes using their defining
+                                properties/attributes.</td>
+                            <td>41.94%</td>
+                            <td>58.38%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-3.3</td>
+                            <td>Identifies attributes of three-dimensional
+                                shapes
+                                (cubes, parallelepipeds, cylinders, cones),
+                                works
+                                hands-on with material to construct these
+                                shapes,
+                                and also uses two-dimensional representations of
+                                three-dimensional objects to visualise and solve
+                                problem</td>
+                            <td>24.19%</td>
+                            <td>38.92%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-3.5</td>
+                            <td>Understands congruence and similarity as it
+                                applies
+                                to geometric shapes and identifies similar and
+                                congruent triangles.</td>
+                            <td>30.32%</td>
+                            <td>39.68%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-4.1</td>
+                            <td>Discovers, understands, and uses formulae to
+                                determine the area of a square, triangle,
+                                parallelogram, and trapezium, and develops
+                                strategies to find the areas of composite 2D
+                                shapes.</td>
+                            <td>38.17%</td>
+                            <td>41.35%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-4.2</td>
+                            <td>Learns the Baudhayana-Pythagoras theorem on the
+                                lengths of the sides of a right-angled triangle,
+                                and
+                                discovers a geometric proof using areas of
+                                squares
+                                erected on the sides of the triangle, and other
+                                related geometric constructions from the
+                                Sulba-Sutras.</td>
+                            <td>14.52%</td>
+                            <td>23.24%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-4.3</td>
+                            <td>Constructs various designs (using tiling) on a
+                                plane
+                                surface using different 2D shapes and
+                                appreciates
+                                their appearances in art in India and around the
+                                world.</td>
+                            <td>29.03%</td>
+                            <td>29.73%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-4.4</td>
+                            <td>Develops familiarity with the notion of fractals
+                                and
+                                identifies and appreciates the appearances of
+                                fractals in nature and art in India and around
+                                the
+                                world.</td>
+                            <td>29.03%</td>
+                            <td>28.11%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-5.1</td>
+                            <td>Collects, organises, and interprets the data
+                                using
+                                measures of central tendencies such as
+                                average/mean,
+                                mode, and median.</td>
+                            <td>20.56%</td>
+                            <td>31.22%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-5.2</td>
+                            <td>Selects, creates, and uses appropriate graphical
+                                representations (e.g., pictographs, bar graphs,
+                                histograms, line graphs, and pie charts) of data
+                                to
+                                make interpretations.</td>
+                            <td>40.32%</td>
+                            <td>39.10%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-7.1</td>
+                            <td>Demonstrates creativity in discovering one's own
+                                solutions to puzzles and other problems, and
+                                appreciates the work of others in finding their
+                                own,
+                                possibly different, solutions.</td>
+                            <td>69.35%</td>
+                            <td>72.97%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-8.1</td>
+                            <td>Approaches problems using programmatic thinking
+                                techniques such as iteration, symbolic
+                                representation, and logical operations, and
+                                reformulates problems into a series of ordered
+                                steps
+                                (i.e., algorithmic thinking).</td>
+                            <td>43.55%</td>
+                            <td>52.61%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-8.2</td>
+                            <td>Learns systematic counting and listing,
+                                systematic
+                                reasoning about counts and iterative patterns,
+                                and
+                                multiple data representations; learns to devise
+                                and
+                                follow algorithms, with an eye towards
+                                understanding
+                                correctness, effectiveness, and efficiency of
+                                al</td>
+                            <td>42.74%</td>
+                            <td>48.65%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Math</td>
+                            <td>6.C-9.1</td>
+                            <td>Recognises how concepts (like counting numbers,
+                                whole numbers, negative numbers, rational
+                                numbers,
+                                zero, concepts of algebra, geometry) evolved
+                                over a
+                                period of time in different civilisations.</td>
+                            <td>56.45%</td>
+                            <td>67.21%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Reading</td>
+                            <td>6.C-1.1</td>
+                            <td>Identifies main points and summarises from a
+                                careful
+                                listening or reading of the text (news articles,
+                                reports, editorials).</td>
+                            <td>40.98%</td>
+                            <td>55.53%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Reading</td>
+                            <td>6.C-1.2</td>
+                            <td>Listens to, plans, and conducts different kinds
+                                of
+                                interviews (structured and unstructured).</td>
+                            <td>35.66%</td>
+                            <td>53.15%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Reading</td>
+                            <td>6.C-1.3</td>
+                            <td>Raises probing questions about social
+                                experiences
+                                using appropriate language
+                                (open-ended/closed-ended,
+                                formal/informal, relevant to context, with
+                                sensitivity).</td>
+                            <td>34.43%</td>
+                            <td>57.10%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Reading</td>
+                            <td>6.C-2.1</td>
+                            <td>Identifies and appreciates different forms of
+                                literature (prose, poetry, drama) and styles of
+                                writing (narrative, descriptive, expository,
+                                persuasive) from various cultures and time
+                                periods.</td>
+                            <td>38.11%</td>
+                            <td>52.29%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Reading</td>
+                            <td>6.C-2.2</td>
+                            <td>Identifies literary devices [simile, metaphor,
+                                personification, hyperbole, alliteration,
+                                idioms,
+                                proverbs, and riddles] by reading a variety of
+                                literature and uses them in writing.</td>
+                            <td>46.60%</td>
+                            <td>59.50%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Reading</td>
+                            <td>6.C-3.1</td>
+                            <td>Interprets and understands basic linguistic
+                                aspects
+                                (rules), such as sentence structure,
+                                punctuation,
+                                tense, gender, and parts of speech, while
+                                reading
+                                different forms of literature, and applies them
+                                while writing.</td>
+                            <td>53.48%</td>
+                            <td>52.90%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Reading</td>
+                            <td>6.C-5.2</td>
+                            <td>Engages in the use of puns, rhymes,
+                                alliteration,
+                                and other wordplays in the language to make
+                                speech
+                                and writing more interesting and enjoyable.</td>
+                            <td>42.08%</td>
+                            <td>47.29%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <footer>
+                <div class="footer navbar-brand d-flex align-items-center gap-2"
+                    href="#">
+                    <img src="/studentreport/edxso-logo.png" alt="Logo"
+                        width="100"
+                        height="50">
+                    <img src="/studentreport/prometric-logo.png" alt="Logo"
+                        width="100"
+                        height="50">
+                </div>
+            </footer>
+        </div>
+
+    </body>
+    <script>
+    // Performance Chart - All Grades
+    const ctxPerformance = document.getElementById('performanceChart').getContext('2d');
+    const performanceChart = new Chart(ctxPerformance, {
+      type: 'bar',
+      data: {
+        labels: ['EVS/Science 6', 'India Awareness 6', 'Math 6', 'Reading 6', 'EVS/Science 7', 'India Awareness 7', 'Math 7', 'Reading 7', 'EVS/Science 8', 'India Awareness 8', 'Math 8', 'Reading 8'],
+        datasets: [{
+          label: 'School Average',
+          data: [41.67, 36.67, 34.89, 41.86, 42.3, 32.85, 37.68, 37.15, 54.58, 33.86, 50.75, 41.06],
+          backgroundColor: 'rgba(54, 162, 235, 0.8)',
+          order: 1
+        }, {
+          label: 'Test Average',
+          data: [55.33, 44.52, 42.99, 53.17, 54.75, 42.37, 47.65, 49.32, 60.77, 38.22, 54.07, 48.42],
+          borderColor: 'rgba(255, 99, 132, 1)',
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          type: 'line',
+          borderWidth: 2,
+          order: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: { 
+          y: { 
+            beginAtZero: true, 
+            max: 100, 
+            title: { 
+              display: true, 
+              text: 'Percentage (%)' 
+            } 
+          },
+          x: {
+            ticks: {
+              autoSkip: false,
+              maxRotation: 45,
+              minRotation: 45
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top'
+          }
+        }
+      }
+    });
+
+    // Radar Chart 1 - Grade 6 Overall Performance
+    const ctxRadar1 = document.getElementById('radarChart1').getContext('2d');
+    const radarChart1 = new Chart(ctxRadar1, {
+      type: 'radar',
+      data: {
+        labels: ['EVS/Science', 'India Awareness', 'Math', 'Reading'],
+        datasets: [{
+          label: 'School Average',
+          data: [41.67, 36.67, 34.89, 41.86],
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }, {
+          label: 'Test Average',
+          data: [55.33, 44.52, 42.99, 53.17],
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+          r: {
+            beginAtZero: true,
+            max: 60,
+            ticks: {
+              stepSize: 10,
+              callback: function(value) { return value + '%'; },
+              font: {
+                size: 10
+              }
+            },
+            pointLabels: {
+              font: {
+                size: 11
+              }
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top'
+          }
+        }
+      }
+    });
+
+    // Grade 6 Chart - Exact replica from file 2
+    const ctx6 = document.getElementById('grade6Chart').getContext('2d');
+    const grade6Chart = new Chart(ctx6, {
+      type: 'bar',
+      data: {
+        labels: ['EVS/Science', 'India\nAwareness', 'Math', 'Reading'],
+        datasets: [{
+          label: 'School_Average',
+          data: [41.67, 36.67, 34.89, 41.86],
+          backgroundColor: '#4472C4',
+          borderColor: '#4472C4',
+          borderWidth: 1,
+          barThickness: 60,
+          order: 2
+        }, {
+          label: 'Test_Average',
+          data: [55.33, 44.52, 42.99, 53.17],
+          type: 'line',
+          borderColor: '#C65911',
+          backgroundColor: '#C65911',
+          borderWidth: 3,
+          pointRadius: 5,
+          pointBackgroundColor: '#C65911',
+          pointBorderColor: '#C65911',
+          pointHoverRadius: 6,
+          tension: 0,
+          order: 1,
+          datalabels: {
+            align: 'top',
+            anchor: 'end',
+            font: {
+              size: 11,
+              weight: 'normal'
+            },
+            formatter: function(value) {
+              return value.toFixed(2) + '%';
+            }
+          }
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 1.8,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            enabled: true
+          },
+          datalabels: {
+            display: function(context) {
+              return context.datasetIndex === 1; // Only show for line
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 60,
+            ticks: {
+              stepSize: 10,
+              callback: function(value) {
+                return value.toFixed(2) + '%';
+              },
+              font: {
+                size: 10
+              }
+            },
+            title: {
+              display: true,
+              text: 'Axis Title',
+              font: {
+                size: 11
+              }
+            },
+            grid: {
+              display: true,
+              color: '#E0E0E0'
+            }
+          },
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              font: {
+                size: 11
+              }
+            }
+          }
+        },
+        layout: {
+          padding: {
+            top: 20,
+            right: 10,
+            bottom: 10,
+            left: 10
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+
+    // Competency Radar Chart - Grade 6
+    const ctxCompetency = document.getElementById('competencyRadarChart').getContext('2d');
+    const competencyRadarChart = new Chart(ctxCompetency, {
+      type: 'radar',
+      data: {
+        labels: ['6.C-1.2', '6.C-1.4', '6.C-2.1', '6.C-2.2', '6.C-2.5', '6.C-3.1', '6.C-3.2', '6.C-3.3', '6.C-4.1', '6.C-4.2', '6.C-4.3', '6.C-5.1', '6.C-5.2', '6.C-6.1', '6.C-6.2', '6.C-7.1', '6.C-8.1', '6.C-9.1', '6.C-9.2'],
+        datasets: [{
+          label: 'Average of School Competency',
+          data: [33.61, 45.00, 30.00, 31.11, 39.17, 53.89, 40.00, 28.33, 51.67, 54.52, 47.08, 43.33, 43.33, 26.67, 32.50, 41.67, 34.17, 40.42, 46.67],
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 5
+        }, {
+          label: 'Average of Test Competency',
+          data: [49.53, 49.24, 49.86, 41.91, 44.12, 69.12, 44.31, 53.06, 55.19, 68.37, 59.90, 65.87, 61.08, 50.30, 46.32, 56.95, 54.04, 47.10, 48.57],
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+          r: {
+            beginAtZero: true,
+            max: 75,
+            ticks: {
+              stepSize: 15,
+              callback: function(value) { return value + '%'; },
+              font: {
+                size: 9
+              }
+            },
+            pointLabels: {
+              font: {
+                size: 9
+              }
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            labels: {
+              font: {
+                size: 11
+              }
+            }
+          }
+        }
+      }
+    });
+  </script>
+</html>

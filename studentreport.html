@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Student Performance Report: Spark Olympiad</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+            rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <style>
+        body {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      background: linear-gradient(135deg, #0c4bad 20%, #001e47 80%);
+      min-height: 100vh;
+      margin: 0;
+      padding: 30px 15px;
+      color: #1e293b;
+    }
+        .report-container { 
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 30px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        }
+        .logo-img {
+            width: 100px;
+            height: auto;
+        }
+        .button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: background-color 0.3s ease;/* Align button to the right */
+}
+
+/* Hover effect */
+.button:hover {
+    background-color: #357c39; /* Darker green */
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* pushes items apart */
+    padding: 10px 20px;
+}
+@media (max-width: 768px) {
+            .report-container {
+                padding: 20px;
+            }
+            h1 { font-size: 1.5rem; }
+            .logo-img { width: 80px; }
+            table th, table td {
+                font-size: 0.9rem;
+                padding: 6px;
+            }
+            canvas { height: 300px !important; }
+        }
+        @media (max-width: 576px) {
+            .report-container {
+                padding: 15px;
+            }
+            table {
+                font-size: 0.85rem;
+            }
+            .table-responsive {
+                overflow-x: auto;
+            }
+        }
+        h1, h2, h3 { color: #333; }
+        h1 { font-size: 28px; font-weight: bold;}
+        h2 { font-size: 22px; font-weight: bold;}
+        h3 { font-size: 16px;font-weight: bold;}
+        h6 { font-size: 15px; font-weight: bold;}
+        table { width: 100%; margin-bottom: 20px; border-collapse: collapse; }
+        th, td {  border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { color: #ffffff; }
+        th { background-color: #33abec; }
+        .highlight { background-color: yellow; }
+        canvas { max-width: 100%; height: auto; margin-bottom: 20px; }
+
+/* Reset */
+* {
+  box-sizing: border-box;
+}
+
+/* Page background */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f4f6f8;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Button */
+#downloadPDF {
+  padding: 8px 14px;
+  background: #1e88e5;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* A4 width lock */
+#reportContent {
+  width: 900px;        /* web-like width */
+  max-width: 100%;
+  margin: 10px auto;
+  padding: 10px;
+  }	
+
+.pdf-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.pdf-table th,
+.pdf-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.pdf-table th {
+  background: #f0f0f0;
+  font-weight: bold;
+}
+
+</style>
+<style>
+.chart-wrapper {
+  width: 100%;
+  max-width: 100%;
+  height: 260px;     /* Fixed height = predictable PDF */
+}
+
+.chart-wrapper canvas {
+  width: 100% !important;
+  height: 260px !important;
+}
+/* Each logical PDF block */
+.pdf-section {
+  margin-bottom: 30px;
+
+}
+pagebreak: {
+  mode: ['avoid-all', 'css']
+}
+.page-break {
+  page-break-before: always !important;
+  break-before: page !important;
+}
+</style>
+
+
+    </head>
+    <body>
+        
+            <header class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+               <div class="header">
+				  <img src="/studentreport/content.png" height="80" />
+				  <button id="downloadPDF">Download PDF</button>
+				</div>
+            </header>
+			<div id="reportContent" class="report-container">
+				<div class="pdf-section">
+
+						<h1 style="margin-top: 20px;">Student Performance Report: Spark
+							Olympiad</h1>
+						<p>Dear Parent,</p>
+
+						<p>We are pleased to share the results for Aaditya Sahu (Grade 3) in
+							Spark Olympiad 2025 conducted by EDXSO in collaboration with
+							Prometric.</p>
+
+						<h2>1. Student Details</h2>
+						<ul>
+							<li>Student Name: Aaditya Sahu</li>
+							<li>Grade: 3</li>
+							<li>School Name: Bal Bharati Public School Dwarka</li>
+						</ul>
+				</div>
+			
+			<div class="pdf-section">
+				<h2>2. Subject Performance & Analysis</h2>
+				<p>This section compares the student's score against the school and
+					overall test averages.</p>
+				<div class="table-responsive">
+					<table>
+						<thead>
+							<tr>
+								<th>Subject</th>
+								<th>Student Score</th>
+								<th>School Average</th>
+								<th>Test Average</th>
+								<th>Performance Band</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class="highlight">EVS/Science</td>
+								<td>73.33%</td>
+								<td>71%</td>
+								<td>79%</td>
+								<td>Strong Performer</td>
+							</tr>
+							<tr>
+								<td>Math</td>
+								<td>56.67%</td>
+								<td>45%</td>
+								<td>55%</td>
+								<td>Confident Learner</td>
+							</tr>
+							<tr>
+								<td>Reading/English</td>
+								<td>53.33%</td>
+								<td>64%</td>
+								<td>56%</td>
+								<td>Confident Learner</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="pdf-section">
+
+				<h3>SPARK Olympiad - Aaditya's Performance</h3>
+				<div class="chart-wrapper">
+				<canvas id="performanceChart"></canvas>
+				</div>
+			</div>
+			
+			<div class="pdf-section">
+				<h3>Subject Analysis:</h3>
+				<ul>
+					<li><strong>EVS/Science:</strong> Aaditya Sahu is showing steady
+						progress in EVS/Science. Their performance is competitive
+						and aligns closely with peer benchmarks, showing a good
+						understanding of the core topics.</li>
+					<li><strong>Math:</strong> Aaditya Sahu has demonstrated an
+						exceptional grasp of Math concepts, performing above both
+						the school and test averages. This indicates a strong
+						foundation and high engagement with the material.</li>
+					<li><strong>English/Reading:</strong> Aaditya Sahu's score in
+						English is currently below the class and test averages,
+						suggesting that some fundamental concepts may require
+						further reinforcement.</li>
+				</ul>
+
+				<h3>Next Steps/Recommendations:</h3>
+				<ul>
+					<li><strong>EVS/Science:</strong> Continued regular practice and
+						focusing on slightly more complex problems will help bridge
+						the gap to the top tier.</li>
+					<li><strong>Math:</strong> We encourage further exploration of
+						advanced topics and participation in logic-based challenges
+						to maintain this momentum.</li>
+					<li><strong>English:</strong> We recommend a focused review of
+						the English curriculum. Targeted practice and clarifying
+						foundational doubts will help build confidence.</li>
+				</ul>
+			</div>
+			
+			<div class="pdf-section">
+
+				<h2>3. Competency-Wise Performance</h2>
+				<p>This section breaks down performance by specific skills within
+					each subject.</p>
+
+				<h3>EVS Competencies Highlights:</h3>
+				<div class="chart-wrapper">
+				<canvas id="evsChart"></canvas>
+				</div>
+			</div>
+			
+			<div class="pdf-section">
+				<ul>
+					<li><strong>Strengths:</strong> Aaditya achieved 100% in
+						describing relationships/traditions, gaining familiarity
+						with disciplinary core ideas, identifying natural/human-made
+						systems, and presenting observations through creative
+						modes.</li>
+					<li><strong>Areas for Improvement:</strong> Scoring 0% in
+						learning basic social and behavioral norms/values.</li>
+				</ul>
+			</div>
+			
+			<div class="pdf-section">
+				<h3>Competency Score for each Subject</h3>
+				<h6>EVS</h6>
+				<table>
+					<thead>
+						<tr>
+							<th>Competency Description</th>
+							<th>Competency Score</th>
+							<th>School Average</th>
+							<th>Test Average</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Asks questions and makes predictions about simple
+								patterns (season change, food chain, phases of the
+								moon, movement of stars and planets, shapes of
+								trees, plants, leaves, and flowers, rituals,
+								celebrations) observed in the immediate
+								environment</td>
+							<td>50.00%</td>
+							<td>75.00%</td>
+							<td>82.41%</td>
+						</tr>
+						<tr>
+							<td>Describes relationships (including between humans
+								and animals/nature) and traditions (art forms,
+								celebrations, festivals) in the family and
+								community</td>
+							<td>100.00%</td>
+							<td>61.11%</td>
+							<td>81.17%</td>
+						</tr>
+						<tr>
+							<td>Describes the basic safety needs and protection
+								(health and hygiene, food, water, shelter,
+								precautions, awareness of emergencies, abuse, and
+								unsafe situations) of humans, birds, and
+								animals.</td>
+							<td>50.00%</td>
+							<td>75.00%</td>
+							<td>75.00%</td>
+						</tr>
+						<tr>
+							<td>Describes the relationship between the natural
+								environment and cultural practices in their
+								immediate environment (nature of work, food,
+								festivals, traditions).</td>
+							<td>33.33%</td>
+							<td>44.44%</td>
+							<td>75.00%</td>
+						</tr>
+						<tr>
+							<td>Discusses how to prepare for emergencies (smoke,
+								fire, small injuries, burns, electrical safety,
+								unseasonal rains, fallen trees) based on discussions
+								with family and community, or personal
+								experiences.</td>
+							<td>100.00%</td>
+							<td>83.33%</td>
+							<td>84.26%</td>
+						</tr>
+						<tr>
+							<td>Gains familiarity with disciplinary core ideas in
+								the natural sciences, as well as in engineering,
+								technology, and applications of science, which
+								reflect the content that will be learned across
+								subject areas in later Grades.</td>
+							<td>100.00%</td>
+							<td>83.33%</td>
+							<td>71.60%</td>
+						</tr>
+						<tr>
+							<td>Identifies natural and human-made systems that
+								support their lives (water supply, water cycle,
+								river flow systems, seasons, life cycle of plants
+								and animals, food, household items, transport,
+								communication, electricity in the home).</td>
+							<td>0.00%</td>
+							<td>50.00%</td>
+							<td>75.93%</td>
+						</tr>
+						<tr>
+							<td>Learns about basic social and behavioural norms,
+								values, and dispositions that benefit our social and
+								natural environments and that help our society
+								function smoothly (using dustbins, standing in
+								queues, conserving water, using public
+								transportation, keep</td>
+							<td>100.00%</td>
+							<td>100.00%</td>
+							<td>79.63%</td>
+						</tr>
+						<tr>
+							<td>Observes and describes diversity among plants,
+								birds, and animals in their immediate environment
+								(shape, sounds, food habits, growth, habitat).</td>
+							<td>100.00%</td>
+							<td>83.33%</td>
+							<td>79.01%</td>
+						</tr>
+						<tr>
+							<td>Observes and identifies the natural (insects,
+								plants, birds, animals, geographical features, sun
+								and moon, stars, planets, natural resources) and
+								social (houses, relationships) components in their
+								immediate environment.</td>
+							<td>50.00%</td>
+							<td>58.33%</td>
+							<td>83.56%</td>
+						</tr>
+						<tr>
+							<td>Presents observations and findings through different
+								creative modes (drawing, diagram, poem, play, skit,
+								oral and written expression).</td>
+							<td>100.00%</td>
+							<td>91.67%</td>
+							<td>83.33%</td>
+						</tr>
+						<tr>
+							<td>Reads simple maps of city, state, and country to
+								identify natural and human-made features (well,
+								lake, post office, school, hospital) with reference
+								to symbols and directions.</td>
+							<td>100.00%</td>
+							<td>66.67%</td>
+							<td>74.54%</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		
+			
+			<div class="pdf-section">
+				<h3>Math Competencies Highlights:</h3>
+				<div class="chart-wrapper">
+				<canvas id="mathChart"></canvas>
+				</div>
+			</div>
+			
+			<div class="pdf-section">
+				<ul>
+					<li><strong>Strengths:</strong> Scored 100% in
+						identifying/analyzing 3D shapes and representing numbers
+						using place value.</li>
+					<li><strong>Areas for Improvement:</strong> Aaditya scored 0% in
+						unit conversions, deducing shape area/perimeter
+						relationships, and understanding formulas for the area of
+						squares or rectangles.</li>
+				</ul>
+
+				<h6>Math</h6>
+				<table>
+					<thead>
+						<tr>
+							<th>Competency Description</th>
+							<th>Competency Score</th>
+							<th>School Average</th>
+							<th>Test Average</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Carries out simple unit conversions, such as from
+								centimetres to metres, within a system of
+								measurement.</td>
+							<td>0.00%</td>
+							<td>50.00%</td>
+							<td>48.44%</td>
+						</tr>
+						<tr>
+							<td>Deduces that shapes having equal areas can have
+								different perimeters and shapes having equal
+								perimetres can have different areas.</td>
+							<td>0.00%</td>
+							<td>10.00%</td>
+							<td>27.56%</td>
+						</tr>
+						<tr>
+							<td>Devises strategies for estimating the distance,
+								length, time, perimeter (for regular and irregular
+								shapes), area (for regular and irregular shapes),
+								weight, and volume and verifies the same using
+								standard units.</td>
+							<td>66.67%</td>
+							<td>46.67%</td>
+							<td>57.19%</td>
+						</tr>
+						<tr>
+							<td>Evaluates the conservation of attributes like length
+								and volume, and solves daily-life problems related
+								to them</td>
+							<td>0.00%</td>
+							<td>30.00%</td>
+							<td>36.89%</td>
+						</tr>
+						<tr>
+							<td>Identifies, compares, and analyses attributes of
+								two- and three-dimensional shapes and develops
+								vocabulary to describe their attributes or
+								properties</td>
+							<td>100.00%</td>
+							<td>50.00%</td>
+							<td>54.67%</td>
+						</tr>
+						<tr>
+							<td>Recognises and creates symmetry (reflection,
+								rotation) in familiar 2D and 3D shapes.</td>
+							<td>50.00%</td>
+							<td>40.00%</td>
+							<td>51.78%</td>
+						</tr>
+						<tr>
+							<td>Recognises, describes, and extends simple number
+								patterns such as odd numbers, even numbers, square
+								numbers, cubes, powers of 2, powers of 10, and
+								Virahanka-Fibonacci numbers.</td>
+							<td>66.67%</td>
+							<td>50.00%</td>
+							<td>51.56%</td>
+						</tr>
+						<tr>
+							<td>Represents and compares commonly used fractions in
+								daily life (such as ½, ¼) as parts of unit wholes,
+								as locations on number lines and as divisions of
+								whole numbers.</td>
+							<td>33.33%</td>
+							<td>36.67%</td>
+							<td>50.96%</td>
+						</tr>
+						<tr>
+							<td>Represents numbers using the place value structure
+								of the Indian number system, compares whole numbers,
+								and knows and can read the names of very large
+								numbers.</td>
+							<td>100.00%</td>
+							<td>63.33%</td>
+							<td>80.30%</td>
+						</tr>
+						<tr>
+							<td>Solves puzzles and daily-life problems involving one
+								or more operations on whole numbers (including word
+								puzzles and puzzles from 'recreational' areas, such
+								as the construction of magic squares).</td>
+							<td>50.00%</td>
+							<td>45.00%</td>
+							<td>61.44%</td>
+						</tr>
+						<tr>
+							<td>Understands and visualises arithmetic operations and
+								the relationships among them, knows addition and
+								multiplication tables at least up to 10×10 and
+								applies the four basic operations on whole numbers
+								to solve daily life problems.</td>
+							<td>66.67%</td>
+							<td>45.00%</td>
+							<td>52.81%</td>
+						</tr>
+						<tr>
+							<td>Understands the definition and formula for the area
+								of a square or rectangle as length times
+								breadth.</td>
+							<td>0.00%</td>
+							<td>40.00%</td>
+							<td>54.22%</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="pdf-section">
+				<h6>English Competencies</h6>
+				<table>
+					<thead>
+						<tr>
+							<th>Competency Description</th>
+							<th>Competency Score</th>
+							<th>School Average</th>
+							<th>Test Average</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Applies varied comprehension strategies (inferring,
+								predicting, visualising) to understand different
+								texts.</td>
+							<td>75.00%</td>
+							<td>77.08%</td>
+							<td>56.85%</td>
+						</tr>
+						<tr>
+							<td>Discusses meanings of words and develops vocabulary
+								by listening to and reading a variety of texts or
+								other content areas</td>
+							<td>0.00%</td>
+							<td>61.11%</td>
+							<td>60.85%</td>
+						</tr>
+						<tr>
+							<td>Discusses meanings of words and develops vocabulary
+								by listening to and reading a variety of texts.</td>
+							<td>50.00%</td>
+							<td>54.17%</td>
+							<td>61.48%</td>
+						</tr>
+						<tr>
+							<td>Understands main ideas and draws essential
+								conclusions from the material read.</td>
+							<td>0.00%</td>
+							<td>66.67%</td>
+							<td>62.79%</td>
+						</tr>
+						<tr>
+							<td>Uses appropriate grammar and structure in their
+								writing.</td>
+							<td>50.00%</td>
+							<td>16.67%</td>
+							<td>44.19%</td>
+						</tr>
+						<tr>
+							<td>Uses writing strategies, such as sequencing,
+								identifying headings/sub-headings, the beginning,
+								and ending, and forming paragraphs.</td>
+							<td>75.00%</td>
+							<td>70.83%</td>
+							<td>51.31%</td>
+						</tr>
+						<tr>
+							<td>Writes clear and coherent paragraphs that convey
+								their understanding of a given topic/concept or a
+								reading of a text.</td>
+							<td>57.14%</td>
+							<td>64.29%</td>
+							<td>52.44%</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+            <footer>
+                <div class="navbar-brand d-flex align-items-center gap-2"
+                    href="#">
+                    <img src="/studentreport/edxso-logo.png" alt="Logo"
+                        width="100"
+                        height="50">
+                    <img src="/studentreport/prometric-logo.png" alt="Logo"
+                        width="100"
+                        height="50" style="margin-left: 630px;">
+                </div>
+            </footer>
+        </div>
+		
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+
+
+    </body>
+	
+    <script>
+    // Performance Chart
+    const ctxPerformance = document.getElementById('performanceChart').getContext('2d');
+    const performanceChart = new Chart(ctxPerformance, {
+      type: 'bar',
+      data: {
+        labels: ['EVS/Science', 'Math', 'Reading'],
+        datasets: [{
+          label: 'Student Score',
+          data: [73.33, 56.67, 53.33],
+          backgroundColor: 'blue',
+          order: 1
+        }, {
+          label: 'School Average',
+          data: [71, 45, 64],
+          borderColor: 'orange',
+          type: 'line',
+          order: 0
+        }, {
+          label: 'Test Average',
+          data: [79, 55, 56],
+          borderColor: 'green',
+          type: 'line',
+          order: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true, max: 100, title: { display: true, text: 'In Percent' } } }
+      }
+    });
+
+    // EVS Chart (example, adjust labels/data from screenshot)
+    const ctxEvs = document.getElementById('evsChart').getContext('2d');
+    const evsChart = new Chart(ctxEvs, {
+      type: 'bar',
+      data: {
+        labels: ['Asks questions...', 'Describes relationships...', 'Describes basic safety...', 'Describes relationship...', 'Discusses how to prepare...', 'Gains familiarity...', 'Identifies natural...', 'Learns about basic...', 'Observes and describes...', 'Observes and identifies...', 'Presents observations...', 'Reads simple maps...'],
+        datasets: [{
+          label: 'Competency Score',
+          data: [50, 100, 50, 33.33, 100, 100, 0, 100, 100, 50, 100, 100],
+          backgroundColor: 'blue'
+        }, {
+          label: 'School Average',
+          data: [75, 61.11, 75, 44.44, 83.33, 83.33, 50, 100, 83.33, 58.33, 91.67, 66.67],
+          backgroundColor: 'green',
+          type: 'line'
+        }, {
+          label: 'Test Average',
+          data: [82.41, 81.17, 75, 75, 84.26, 71.6, 75.93, 79.63, 79.01, 83.56, 83.33, 74.54],
+          backgroundColor: 'orange',
+          type: 'line'
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true, max: 100 } }
+      }
+    });
+
+    // Math Chart (similarly, adjust)
+    const ctxMath = document.getElementById('mathChart').getContext('2d');
+    const mathChart = new Chart(ctxMath, {
+      type: 'bar',
+      data: {
+        labels: ['Carries out simple unit...', 'Deduces that shapes...', 'Devises strategies for...', 'Evaluates the conservation...', 'Identifies, compares...', 'Recognises and creates...', 'Recognises, describes...', 'Represents and compares...', 'Represents numbers using...', 'Solves puzzles and...', 'Understands and visualises...', 'Understands the definition...'],
+        datasets: [{
+          label: 'Competency Score',
+          data: [0, 0, 66.67, 0, 100, 50, 66.67, 33.33, 100, 50, 66.67, 0],
+          backgroundColor: 'blue'
+        }, {
+          label: 'School Average',
+          data: [50, 10, 46.67, 30, 50, 40, 50, 36.67, 63.33, 45, 45, 40],
+          backgroundColor: 'green',
+          type: 'line'
+        }, {
+          label: 'Test Average',
+          data: [48.44, 27.56, 57.19, 36.89, 54.67, 51.78, 51.56, 50.96, 80.3, 61.44, 52.81, 54.22],
+          backgroundColor: 'orange',
+          type: 'line'
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true, max: 100 } }
+      }
+    });
+  </script>
+
+
+<script>
+document.getElementById("downloadPDF").addEventListener("click", function () {
+
+  const element = document.getElementById("reportContent");
+
+  const opt = {
+    margin: 0,
+    filename: 'Student_Report_Long_Page.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      scrollY: 0,
+      backgroundColor: '#ffffff',
+      windowWidth: document.body.scrollWidth
+    },
+    jsPDF: {
+      unit: 'px',
+      format: [element.scrollWidth, element.scrollHeight],
+      orientation: 'portrait'
+    }
+  };
+
+  html2pdf().set(opt).from(element).save();
+});
+</script>
+
+
+</html>

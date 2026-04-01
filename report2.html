@@ -1,0 +1,5153 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>School Performance Report: Spark Olympiad</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+font-family: 'Poppins', sans-serif;
+background: linear-gradient(135deg, #0c4bad 20%, #001e47 80%);
+min-height: 100vh;
+margin: 0;
+padding: 30px 15px;
+color: #1e293b;
+}
+.report-container { 
+max-width: 1200px;
+margin: 40px auto;
+padding: 30px;
+background: white;
+border-radius: 12px;
+}
+h1 {
+font-size: 28px;
+font-weight: bold;
+margin-bottom: 18px;
+color: #000;
+}
+h2 {
+font-size: 22px;
+font-weight: 700;
+margin: 20px 0 6px 0;
+color: #000;
+}
+.header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+/* padding: 10px 20px; */
+flex-wrap: wrap;
+gap: 15px;
+}
+.footer {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 10px 20px;
+flex-wrap: wrap;
+gap: 15px;
+}
+h3 {
+font-size: 16px;
+font-weight: 700;
+margin: 14px 0 6px 0;
+}
+p { margin-bottom: 8px; line-height: 1.5; }
+/* --- Section 1 header --- */
+.section1-header {
+font-size: 15px;
+font-weight: 700;
+margin: 22px 0 4px 0;
+}
+.section1-sub {
+font-size: 11px;
+font-weight: 400;
+margin-left: 6px;
+}
+.school-grade-header {
+font-size: 14px;
+font-weight: 400;
+margin: 18px 0 6px 0;
+}
+.school-grade-header strong {
+font-weight: 700;
+}
+/* --- Two-column chart+text layout --- */
+.split-box {
+display: flex;
+border: 1px solid #999;
+margin-bottom: 20px;
+min-height: 360px;
+}
+.split-left {
+flex: 0 0 42%;
+border-right: 1px solid #999;
+padding: 14px;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: flex-start;
+background: #fff;
+}
+.split-right {
+flex: 1;
+padding: 16px 20px;
+font-size: 16px;
+line-height: 1.55;
+}
+.split-right .subject-block {
+margin-bottom: 14px;
+}
+.split-right .subj-title {
+font-weight: 600;
+font-size: 16px;
+margin-bottom: 2px;
+}
+.split-right .divider-line {
+border: none;
+border-top: 1px solid #555;
+margin: 1.5px 0 3px 0;
+}
+/* legend table under bar chart */
+.legend-table {
+width: 100%;
+border-collapse: collapse;
+font-size: 10.5px;
+margin-top: 8px;
+}
+.legend-table td {
+border: 1px solid #ccc;
+padding: 3px 6px;
+text-align: center;
+}
+.legend-swatch {
+display: inline-block;
+width: 14px;
+height: 12px;
+margin-right: 4px;
+vertical-align: middle;
+}
+/* --- Competency section --- */
+.repeat-note {
+font-size: 12px;
+font-style: italic;
+margin: 12px 0 18px 0;
+}
+/* --- Performance Band table (split layout) --- */
+.band-table {
+width: 100%;
+border-collapse: collapse;
+font-size: 14px;
+}
+.band-table th {
+background: #add8e6;
+padding: 6px 10px;
+font-weight: 700;
+border: 1px solid #aac;
+text-align: left;
+}
+.band-table td {
+padding: 8px 10px;
+border: 1px solid #ccd;
+vertical-align: top;
+}
+.band-table tr:nth-child(odd) td { background: #fff; }
+.band-row-label {
+font-weight: 700;
+white-space: nowrap;
+min-width: 150px;
+}
+.comp-tags {
+display: flex;
+flex-wrap: wrap;
+gap: 6px;
+}
+.comp-tag {
+font-size: 12px;
+color: #000;
+}
+/* --- Dark radar chart section --- */
+.dark-split-box {
+display: flex;
+border: 1px solid #999;
+margin-bottom: 20px;
+min-height: 380px;
+}
+.dark-split-left {
+flex: 0 0 58%;
+background: #3a3a3a;
+padding: 16px;
+display: flex;
+align-items: center;
+justify-content: center;
+border-right: 1px solid #999;
+}
+.dark-split-right {
+flex: 1;
+padding: 18px 20px;
+font-size: 12px;
+line-height: 1.6;
+}
+.dark-split-right h3 { font-size: 13px; margin-bottom: 10px; }
+.dark-split-right ul { margin-left: 18px; margin-bottom: 8px; }
+.dark-split-right ul li { margin-bottom: 4px; }
+/* --- Competency detail table --- */
+.comp-detail-table {
+width: 100%;
+border-collapse: collapse;
+font-size: 14px;
+margin-top: 12px;
+}
+.grade-header {
+background-color: #f0f0f0;
+padding: 10px 20px;
+margin: 20px 0 0 0;
+border: 1px solid #ddd;
+font-weight: bold;
+font-size: 18px;
+}
+.comp-detail-table th {
+background: #add8e6;
+color: #000;
+padding: 8px 8px;
+border: 1px solid #aac;
+font-weight: 700;
+vertical-align: bottom;
+}
+.comp-detail-table td {
+padding: 7px 8px;
+border: 1px solid #ccd;
+vertical-align: top;
+line-height: 1.45;
+}
+.comp-detail-table tr:nth-child(even) td { background: #f5f5f5; }
+.comp-detail-table td:first-child { font-weight: 700; white-space: nowrap; }
+.band-sig-below { color: #000; }
+/* --- Competency highlights table (page 6 style) --- */
+.highlights-table {
+width: 100%;
+border-collapse: collapse;
+font-size: 14px;
+margin-top: 10px;
+}
+.highlights-table th {
+background: #add8e6;
+padding: 7px 8px;
+border: 1px solid #aab;
+font-weight: 700;
+vertical-align: bottom;
+}
+.highlights-table td {
+padding: 6px 8px;
+border: 1px solid #ccc;
+vertical-align: top;
+line-height: 1.4;
+}
+.button {
+background-color: #4CAF50;
+border: none;
+color: white;
+padding: 15px 32px;
+text-align: right !important;
+text-decoration: none;
+display: flex;
+font-size: 16px;
+cursor: pointer;
+border-radius: 12px;
+transition: background-color 0.3s ease;
+}
+.highlights-table td.comp-id { font-weight: 700; white-space: nowrap; }
+canvas { max-width: 100%; }
+
+.page {
+	min-height: 850px;
+	background: #fff;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 50px 40px 30px;
+	position: relative;
+}
+
+.spark-logo {
+		width: 120px;
+		margin-bottom: 35px;
+}
+
+.heading-block {
+	width: 80%;
+	text-align: center;
+	margin-bottom: 40px;
+	position: relative;
+}
+
+
+.page-break {
+    page-break-before: always;
+}
+
+.pdf-mode {
+transform: scale(0.85);
+transform-origin: top left;
+width: 117%;
+font-size: 12px !important;
+}
+.pdf-mode h1 {
+font-size: 18px !important;
+}
+.pdf-mode h2 {
+font-size: 16px !important;
+}
+.pdf-mode canvas {
+max-width: 100% !important;
+height: auto !important;
+}
+
+/* India's First - sits above box, white bg hides the top border behind it */
+.indias-first-wrap {
+position: relative;
+z-index: 2;
+margin-bottom: 0;
+line-height: 1;
+}
+.indias-first {
+color: #1A4FB5;
+font-size: 35px;
+font-weight: bold;
+font-family: CRIMSON PRO;
+display: inline-block;
+background: #fff;
+padding: 0 8px;
+position: relative;
+top: 2px;
+}
+/* Box: NO top border, only left right bottom */
+.box-section {
+padding: 10px 20px 14px;
+position: relative;
+border: 2px solid #8fb1cf;
+border-bottom: 2px solid;
+border-image: linear-gradient(to right,
+#6f8fb3 0%,
+#9fb6cc 30%,
+#f06d2f 35%,
+#f06d2f 65%,
+#9fb6cc 70%,
+#6f8fb3 100%) 1;
+}
+.competency-based {
+color: #E8500A;
+font-size: 35px;
+font-weight: bold;
+font-family: crimson pro;
+margin-bottom: 4px;
+line-height: 1;
+}
+.online-olympiad {
+font-size: 48px;
+font-weight: bold;
+color: #E8500A;
+font-family: Crimson pro;
+}
+.school-label {
+font-size: 18px;
+color: #333;
+margin-bottom: 6px;
+font-family: Arial, sans-serif;
+font-weight: bold;
+}
+.report-title {
+font-size: 28px;
+font-weight: bold;
+color: #111;
+font-family: crimson pro;
+margin-bottom: 40px;
+}
+.by-divider {
+display: flex;
+align-items: center;
+width: 100%;
+margin-bottom: 30px;
+gap: 15px;
+}
+.by-divider hr {
+flex: 1;
+border: none;
+border-top: 1px solid #999;
+}
+.by-divider span {
+color: #555;
+font-size: 14px;
+font-family: Arial, sans-serif;
+}
+.logos-row {
+display: flex;
+justify-content: space-around;
+align-items: flex-start;
+width: 100%;
+margin-bottom: auto;
+gap: 20px;
+}
+.logo-item {
+display: flex;
+flex-direction: column;
+align-items: center;
+text-align: center;
+flex: 1;
+}
+.logo-item img {
+height: 40px;
+object-fit: contain;
+margin-bottom: 10px;
+}
+.logo-item p {
+font-size: 12px;
+color: #333;
+font-family: Arial, sans-serif;
+line-height: 1.5;
+}
+.footeer {
+border-top: 1px solid #ccc;
+width: 100%;
+padding-top: 15px;
+text-align: center;
+margin-top: 40px;
+}
+.footeer p {
+font-size: 11px;
+color: #444;
+font-family: Arial, sans-serif;
+line-height: 1.6;
+}
+.prometric-label {
+font-family: Arial, sans-serif;
+font-size: 14px;
+letter-spacing: 2px;
+color: #111;
+margin-bottom: 6px;
+font-weight: bold;
+}
+.band-red {
+background-color: #e53935;
+color: #fff;
+font-weight: 600;
+}
+.band-orange {
+background-color: #fb8c00;
+color: #fff;
+font-weight: 600;
+}
+.band-blue {
+background-color: #1e88e5;
+color: #fff;
+font-weight: 600;
+}
+.band-lightgreen {
+background-color: #66bb6a;
+color: #fff;
+font-weight: 600;
+}
+.band-green {
+background-color: #2e7d32;
+color: #fff;
+font-weight: 600;
+}
+#reportContentforprint {
+width: 900px;
+max-width: 100%;
+margin: 10px auto;
+padding: 10px;
+}
+.s-logo {
+    width: 250px;
+    margin-bottom: 35px;
+    }
+
+/* PRINT STYLES - SINGLE CLEAN VERSION */
+@media print {
+
+.highlights-table th {
+	 font-size:11px;
+}
+
+.printh{
+  font-size:20px;
+}
+
+
+.printh2{
+  font-size:16px;
+}
+
+ 
+.page-break {
+    break-before: page;
+    page-break-before: always;
+}
+
+.no-print { 
+    display: none !important; 
+}
+
+.print-small-text {
+      font-size: 12px !important;    
+      line-height: 1.4;
+}
+ 
+body { 
+background: white !important;
+padding: 0 !important;
+margin: 0 !important;
+}
+
+.spark-logo2 {
+        width: 100% !important;
+        height: auto !important;
+        max-width: 100% !important;
+        transform: scale(0.5) !important;   /* try this if above doesn't work */
+        transform-origin: top left !important;
+		margin-bottom:1px!important;
+    }
+
+
+.report-container { 
+background: white !important;
+box-shadow: none !important;
+border-radius: 0 !important;
+margin: 0 !important;
+padding: 20px !important;
+}
+
+
+canvas {
+display: block !important;
+visibility: visible !important;
+max-width: 100% !important;
+height: auto !important;
+}
+.split-box, .dark-split-box {
+page-break-inside: avoid;
+}
+.grade-header {
+page-break-after: avoid;
+}
+
+.report-container header img {
+display: block;
+height: 80px !important;
+width: auto !important;
+max-width: 100%;
+}
+.online-olympiad {
+    white-space: nowrap;
+    font-size: 20px !important; 
+    
+    
+}
+
+.box-section {
+border-bottom-width: 1px !important;
+border-top-width: 1px !important;
+-webkit-print-color-adjust: exact;
+print-color-adjust: exact;
+margin-bottom: 45px;
+}
+* {
+-webkit-print-color-adjust: exact !important;
+print-color-adjust: exact !important;
+}
+@page {
+  margin: 0.2in;
+  size: A4;
+}
+}
+.title-x{
+  margin-bottom: 100px;
+
+}
+.logo-x{
+      width: 150px;
+}
+.raghav{
+  margin-top: 210px;
+}
+
+ 
+/* Counter for page numbers */
+@page {
+        margin-bottom: 50px;
+    }
+
+    .page-footer {
+        display: none;
+    }
+
+    @media print {
+        .page-footer {
+            display: block;
+            position: fixed;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .page-number::before {
+            content: "Page " counter(page);
+        }
+    }
+</style>
+</head>
+<body>
+<div id="reportContentforprint">
+
+
+<div class="report-container">
+	<header class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+	<div class="header">
+	<button id="downloadPDF" class="button no-print">Print/Save as PDF</button>
+	</div>
+	</header>
+
+	<section class="top">
+	<div class="page">
+	<img src="/studentreport/content.png" class="s-logo" alt="Spark Olympiads">
+	<div class="heading-block">
+	<div class="indias-first-wrap">
+	<span class="indias-first">India's First</span>
+	</div>
+	<div class="box-section">      
+	<div class="online-olympiad">Competency Based Online Olympiad</div>
+	</div>
+	</div>
+	<div class="school-label">Bal Bharati Public School Dwarka</div>
+	<div class="report-title title-x">Olympiad Report</div>
+	<div class="by-divider">
+	<hr>
+	<span>By</span>
+	<hr>
+	</div>
+	<div class="logos-row">
+	<div class="logo-item">
+	<img src="/studentreport/edxso-logo.png" class= "spark-logo logo-x" alt="Logo" width="100" height="50">
+	<p>India's Premier<br>Education Consultants</p>
+	</div>
+	<div class="logo-item">
+	<div class="prometric-label"></div>
+	<img src="/studentreport/prometric-logo.png" class= "spark-logo" alt="Logo" width="100" height="50">      
+	<p>Global Leaders in Secure<br>Large Scale Online Testing</p>
+	</div>
+	</div>
+	<div class="footeer raghav">
+	<p>For More Information, Contact:<br><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bdcfd8dcded5d2c8c9fdcecddccfd6d2d1c4d0cdd4dcd9ce93ded2d0">[email&#160;protected]</a> &nbsp;|&nbsp; +91 84474 77275</p>
+	</div>
+	</div>
+	</section>
+</div>
+
+<div class="page-break"></div>
+
+
+<div class="report-container">
+<header class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+<div class="header">
+	<img src="/studentreport/content.png" class="spark-logo spark-logo2" alt="Spark Olympiads">
+</div>
+</header>
+<hr class="divider-line">
+<h1 style="margin-top: 10px;" class="printh">School Performance Report: SparkOlympiad</h1>
+<h2>Bal Bharati Public School Dwarka</h2>
+<p>Dear School Leader,</p>
+<p>We are pleased to share the results for Spark Olympiad 2025 conducted by EDXSO in collaboration with Prometric.</p>
+
+<h2 class="printh2">1. Subject Performance & Analysis</h2>
+<p>This section compares School's performance against National Average.</p>
+
+
+
+ 
+<div class="grade-header">Grade 3 </div>
+<br>
+<div class="split-box">
+<div class="split-left">
+<!-- Bar Chart -->
+<div style="width:100%;">
+<canvas id="barChart3" height="180"></canvas>
+<table class="legend-table">
+<tr>
+<td><span class="legend-swatch" style="background:#4472C4;"></span>School Average</td>
+<td>71.11%</td>
+<td>52.50%</td>
+<td>45.00%</td>
+<td>63.89%</td>
+</tr>
+<tr>
+<td><span class="legend-swatch" style="background:#C00000; height:3px; margin-top:5px;"></span>National Average</td>
+<td>78.64%</td>
+<td>58.14%</td>
+<td>55.42%</td>
+<td>55.52%</td>
+</tr>
+</table>
+</div>
+
+  
+<div style="width:100%; margin-top:16px;">
+<canvas id="radarChart3" height="200"></canvas>
+</div>
+</div>
+
+<div class="split-right">
+<div class="subject-block"> 
+
+<p class="print-small-text"><strong>EVS/Science - GRADE 3</strong><br />
+================================================<br />
+<strong>LEARNING INSIGHTS:</strong><br />
+ FOCUSED IMPROVEMENT OPPORTUNITY:<br />
+Current performance trends indicate scope to strengthen alignment with national benchmarks. Additional emphasis on application-level understanding within the EVS/Science curriculum can further support student progress and confidence.<br />
+</p>
+</div>
+
+<div class="subject-block"> 
+
+<p class="print-small-text"><strong>India Awareness - GRADE 3</strong><br />
+================================================<br />
+<strong>LEARNING INSIGHTS:</strong><br />
+ FOCUSED IMPROVEMENT OPPORTUNITY:<br />
+Current performance trends indicate scope to strengthen alignment with national benchmarks. Additional emphasis on application-level understanding within the India Awareness curriculum can further support student progress and confidence.<br />
+</p>
+</div>
+
+<div class="subject-block"> 
+
+<p class="print-small-text"><strong>Math - GRADE 3</strong><br />
+================================================<br />
+<strong>LEARNING INSIGHTS:</strong><br />
+ FOCUSED IMPROVEMENT OPPORTUNITY:<br />
+Current performance trends indicate scope to strengthen alignment with national benchmarks. Additional emphasis on application-level understanding within the Math curriculum can further support student progress and confidence.<br />
+</p>
+</div>
+
+<div class="subject-block"> 
+
+<p class="print-small-text"><strong>Reading - GRADE 3</strong><br />
+================================================<br />
+<strong>LEARNING INSIGHTS:</strong><br />
+   PERFORMANCE HIGHLIGHT: The department is demonstrating strong academic performance. Student outcomes are above the national benchmark, reflecting effective conceptual delivery and positive student engagement with the subject.<br />
+</p>
+</div>
+
+
+</div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const subjects3 = ["EVS\/Science","India Awareness","Math","Reading"];
+const schoolAvg3 = [71.11,52.5,45,63.89];
+const testAvg3 = [78.64,58.14,55.42,55.52];
+
+// Bar Chart for grade 3
+new Chart(document.getElementById('barChart3').getContext('2d'), {
+type: 'bar',
+data: {
+labels: subjects3,
+datasets: [{
+label: 'School Average',
+data: schoolAvg3,
+backgroundColor: '#4472C4',
+order: 2
+},{
+label: 'National Average',
+data: testAvg3,
+type: 'line',
+borderColor: '#C00000',
+borderWidth: 2,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0,
+order: 1
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: true,
+animation: {
+duration: 0
+},
+scales: {
+y: {
+beginAtZero: true,
+max: 100,
+ticks: {
+callback: v => v.toFixed(2) + '%',
+font: { size: 9 }
+},
+grid: { color: '#E0E0E0' }
+},
+x: {
+grid: { display: false },
+ticks: { font: { size: 9 } }
+}
+}
+}
+});
+
+// Radar Chart for grade 3
+new Chart(document.getElementById('radarChart3').getContext('2d'), {
+type: 'radar',
+data: {
+labels: subjects3,
+datasets: [{
+label: 'School Average',
+data: schoolAvg3,
+backgroundColor: 'rgba(68,114,196,0.3)',
+borderColor: '#4472C4',
+borderWidth: 2,
+pointRadius: 4
+},{
+label: 'National Average',
+data: testAvg3,
+backgroundColor: 'rgba(192,0,0,0.2)',
+borderColor: '#C00000',
+borderWidth: 2,
+pointRadius: 4
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: true,
+animation: {
+duration: 0
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 10,
+callback: value => value + '%',
+font: { size: 10 }
+},
+pointLabels: {
+font: { size: 11 }
+}
+}
+},
+plugins: {
+legend: {
+display: true,
+position: 'bottom'
+}
+} 
+}
+});
+</script>
+ 
+	<div class="page-break"></div>
+
+ 
+<div class="grade-header">Grade 4 </div>
+<br>
+<div class="split-box">
+<div class="split-left">
+<!-- Bar Chart -->
+<div style="width:100%;">
+<canvas id="barChart4" height="180"></canvas>
+<table class="legend-table">
+<tr>
+<td><span class="legend-swatch" style="background:#4472C4;"></span>School Average</td>
+<td>55.56%</td>
+<td>51.11%</td>
+<td>46.67%</td>
+<td>46.67%</td>
+</tr>
+<tr>
+<td><span class="legend-swatch" style="background:#C00000; height:3px; margin-top:5px;"></span>National Average</td>
+<td>75.61%</td>
+<td>55.38%</td>
+<td>53.09%</td>
+<td>58.05%</td>
+</tr>
+</table>
+</div>
+
+  
+<div style="width:100%; margin-top:16px;">
+<canvas id="radarChart4" height="200"></canvas>
+</div>
+</div>
+
+<div class="split-right">
+<div class="subject-block"> 
+
+<p class="print-small-text"><strong>EVS/Science - GRADE 4</strong><br />
+================================================<br />
+<strong>LEARNING INSIGHTS:</strong><br />
+ FOCUSED IMPROVEMENT OPPORTUNITY:<br />
+Current performance trends indicate scope to strengthen alignment with national benchmarks. Additional emphasis on application-level understanding within the EVS/Science curriculum can further support student progress and confidence.<br />
+</p>
+</div>
+
+<div class="subject-block"> 
+
+<p class="print-small-text"><strong>India Awareness - GRADE 4</strong><br />
+================================================<br />
+<strong>LEARNING INSIGHTS:</strong><br />
+   CONSISTENT PERFORMANCE: The schoolâ€™s performance aligns closely with national trends, indicating stable learning outcomes. To progress toward higher levels of achievement, gradual exposure to more complex and non-routine problem-solving tasks will be beneficial.<br />
+</p>
+</div>
+
+<div class="subject-block"> 
+
+<p class="print-small-text"><strong>Math - GRADE 4</strong><br />
+================================================<br />
+<strong>LEARNING INSIGHTS:</strong><br />
+ FOCUSED IMPROVEMENT OPPORTUNITY:<br />
+Current performance trends indicate scope to strengthen alignment with national benchmarks. Additional emphasis on application-level understanding within the Math curriculum can further support student progress and confidence.<br />
+</p>
+</div>
+
+<div class="subject-block"> 
+
+<p class="print-small-text"><strong>Reading - GRADE 4</strong><br />
+================================================<br />
+<strong>LEARNING INSIGHTS:</strong><br />
+ FOCUSED IMPROVEMENT OPPORTUNITY:<br />
+Current performance trends indicate scope to strengthen alignment with national benchmarks. Additional emphasis on application-level understanding within the Reading curriculum can further support student progress and confidence.<br />
+</p>
+</div>
+
+
+</div>
+</div>
+
+<script>
+const subjects4 = ["EVS\/Science","India Awareness","Math","Reading"];
+const schoolAvg4 = [55.56,51.11,46.67,46.67];
+const testAvg4 = [75.61,55.38,53.09,58.05];
+
+// Bar Chart for grade 4
+new Chart(document.getElementById('barChart4').getContext('2d'), {
+type: 'bar',
+data: {
+labels: subjects4,
+datasets: [{
+label: 'School Average',
+data: schoolAvg4,
+backgroundColor: '#4472C4',
+order: 2
+},{
+label: 'National Average',
+data: testAvg4,
+type: 'line',
+borderColor: '#C00000',
+borderWidth: 2,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0,
+order: 1
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: true,
+animation: {
+duration: 0
+},
+scales: {
+y: {
+beginAtZero: true,
+max: 100,
+ticks: {
+callback: v => v.toFixed(2) + '%',
+font: { size: 9 }
+},
+grid: { color: '#E0E0E0' }
+},
+x: {
+grid: { display: false },
+ticks: { font: { size: 9 } }
+}
+}
+}
+});
+
+// Radar Chart for grade 4
+new Chart(document.getElementById('radarChart4').getContext('2d'), {
+type: 'radar',
+data: {
+labels: subjects4,
+datasets: [{
+label: 'School Average',
+data: schoolAvg4,
+backgroundColor: 'rgba(68,114,196,0.3)',
+borderColor: '#4472C4',
+borderWidth: 2,
+pointRadius: 4
+},{
+label: 'National Average',
+data: testAvg4,
+backgroundColor: 'rgba(192,0,0,0.2)',
+borderColor: '#C00000',
+borderWidth: 2,
+pointRadius: 4
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: true,
+animation: {
+duration: 0
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 10,
+callback: value => value + '%',
+font: { size: 10 }
+},
+pointLabels: {
+font: { size: 11 }
+}
+}
+},
+plugins: {
+legend: {
+display: true,
+position: 'bottom'
+}
+} 
+}
+});
+</script>
+ 
+	<div class="page-break"></div>
+
+ 
+<div class="grade-header">Grade 5 </div>
+<br>
+<div class="split-box">
+<div class="split-left">
+<!-- Bar Chart -->
+<div style="width:100%;">
+<canvas id="barChart5" height="180"></canvas>
+<table class="legend-table">
+<tr>
+<td><span class="legend-swatch" style="background:#4472C4;"></span>School Average</td>
+<td>66.67%</td>
+<td>46.67%</td>
+<td>38.67%</td>
+<td>52.50%</td>
+</tr>
+<tr>
+<td><span class="legend-swatch" style="background:#C00000; height:3px; margin-top:5px;"></span>National Average</td>
+<td>64.90%</td>
+<td>44.71%</td>
+<td>45.64%</td>
+<td>61.80%</td>
+</tr>
+</table>
+</div>
+
+  
+<div style="width:100%; margin-top:16px;">
+<canvas id="radarChart5" height="200"></canvas>
+</div>
+</div>
+
+<div class="split-right">
+<div class="subject-block"> 
+
+<p class="print-small-text"><strong>EVS/Science - GRADE 5</strong><br />
+================================================<br />
+<strong>LEARNING INSIGHTS:</strong><br />
+   CONSISTENT PERFORMANCE: The schoolâ€™s performance aligns closely with national trends, indicating stable learning outcomes. To progress toward higher levels of achievement, gradual exposure to more complex and non-routine problem-solving tasks will be beneficial.<br />
+</p>
+</div>
+
+<div class="subject-block"> 
+
+<p class="print-small-text"><strong>India Awareness - GRADE 5</strong><br />
+================================================<br />
+<strong>LEARNING INSIGHTS:</strong><br />
+   CONSISTENT PERFORMANCE: The schoolâ€™s performance aligns closely with national trends, indicating stable learning outcomes. To progress toward higher levels of achievement, gradual exposure to more complex and non-routine problem-solving tasks will be beneficial.<br />
+</p>
+</div>
+
+<div class="subject-block"> 
+
+<p class="print-small-text"><strong>Math - GRADE 5</strong><br />
+================================================<br />
+<strong>LEARNING INSIGHTS:</strong><br />
+ FOCUSED IMPROVEMENT OPPORTUNITY:<br />
+Current performance trends indicate scope to strengthen alignment with national benchmarks. Additional emphasis on application-level understanding within the Math curriculum can further support student progress and confidence.<br />
+</p>
+</div>
+
+<div class="subject-block"> 
+
+<p class="print-small-text"><strong>Reading - GRADE 5</strong><br />
+================================================<br />
+<strong>LEARNING INSIGHTS:</strong><br />
+ FOCUSED IMPROVEMENT OPPORTUNITY:<br />
+Current performance trends indicate scope to strengthen alignment with national benchmarks. Additional emphasis on application-level understanding within the Reading curriculum can further support student progress and confidence.<br />
+</p>
+</div>
+
+
+</div>
+</div>
+
+<script>
+const subjects5 = ["EVS\/Science","India Awareness","Math","Reading"];
+const schoolAvg5 = [66.67,46.67,38.67,52.5];
+const testAvg5 = [64.9,44.71,45.64,61.8];
+
+// Bar Chart for grade 5
+new Chart(document.getElementById('barChart5').getContext('2d'), {
+type: 'bar',
+data: {
+labels: subjects5,
+datasets: [{
+label: 'School Average',
+data: schoolAvg5,
+backgroundColor: '#4472C4',
+order: 2
+},{
+label: 'National Average',
+data: testAvg5,
+type: 'line',
+borderColor: '#C00000',
+borderWidth: 2,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0,
+order: 1
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: true,
+animation: {
+duration: 0
+},
+scales: {
+y: {
+beginAtZero: true,
+max: 100,
+ticks: {
+callback: v => v.toFixed(2) + '%',
+font: { size: 9 }
+},
+grid: { color: '#E0E0E0' }
+},
+x: {
+grid: { display: false },
+ticks: { font: { size: 9 } }
+}
+}
+}
+});
+
+// Radar Chart for grade 5
+new Chart(document.getElementById('radarChart5').getContext('2d'), {
+type: 'radar',
+data: {
+labels: subjects5,
+datasets: [{
+label: 'School Average',
+data: schoolAvg5,
+backgroundColor: 'rgba(68,114,196,0.3)',
+borderColor: '#4472C4',
+borderWidth: 2,
+pointRadius: 4
+},{
+label: 'National Average',
+data: testAvg5,
+backgroundColor: 'rgba(192,0,0,0.2)',
+borderColor: '#C00000',
+borderWidth: 2,
+pointRadius: 4
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: true,
+animation: {
+duration: 0
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 10,
+callback: value => value + '%',
+font: { size: 10 }
+},
+pointLabels: {
+font: { size: 11 }
+}
+}
+},
+plugins: {
+legend: {
+display: true,
+position: 'bottom'
+}
+} 
+}
+});
+</script>
+ 
+	<div class="page-break"></div>
+
+ 
+<div class="grade-header">Grade 8 </div>
+<br>
+<div class="split-box">
+<div class="split-left">
+<!-- Bar Chart -->
+<div style="width:100%;">
+<canvas id="barChart8" height="180"></canvas>
+<table class="legend-table">
+<tr>
+<td><span class="legend-swatch" style="background:#4472C4;"></span>School Average</td>
+<td>85.83%</td>
+<td>50.83%</td>
+<td>85.00%</td>
+<td>67.50%</td>
+</tr>
+<tr>
+<td><span class="legend-swatch" style="background:#C00000; height:3px; margin-top:5px;"></span>National Average</td>
+<td>60.77%</td>
+<td>38.22%</td>
+<td>54.07%</td>
+<td>48.42%</td>
+</tr>
+</table>
+</div>
+
+  
+<div style="width:100%; margin-top:16px;">
+<canvas id="radarChart8" height="200"></canvas>
+</div>
+</div>
+
+<div class="split-right">
+<div class="subject-block"> 
+
+<p class="print-small-text"><strong>EVS/Science - GRADE 8</strong><br />
+================================================<br />
+<strong>LEARNING INSIGHTS:</strong><br />
+   PERFORMANCE HIGHLIGHT: The department is demonstrating strong academic performance. Student outcomes are above the national benchmark, reflecting effective conceptual delivery and positive student engagement with the subject.<br />
+</p>
+</div>
+
+<div class="subject-block"> 
+
+<p class="print-small-text"><strong>India Awareness - GRADE 8</strong><br />
+================================================<br />
+<strong>LEARNING INSIGHTS:</strong><br />
+   PERFORMANCE HIGHLIGHT: The department is demonstrating strong academic performance. Student outcomes are above the national benchmark, reflecting effective conceptual delivery and positive student engagement with the subject.<br />
+</p>
+</div>
+
+<div class="subject-block"> 
+
+<p class="print-small-text"><strong>Math - GRADE 8</strong><br />
+================================================<br />
+<strong>LEARNING INSIGHTS:</strong><br />
+   PERFORMANCE HIGHLIGHT: The department is demonstrating strong academic performance. Student outcomes are above the national benchmark, reflecting effective conceptual delivery and positive student engagement with the subject.<br />
+</p>
+</div>
+
+<div class="subject-block"> 
+
+<p class="print-small-text"><strong>Reading - GRADE 8</strong><br />
+================================================<br />
+<strong>LEARNING INSIGHTS:</strong><br />
+   PERFORMANCE HIGHLIGHT: The department is demonstrating strong academic performance. Student outcomes are above the national benchmark, reflecting effective conceptual delivery and positive student engagement with the subject.<br />
+</p>
+</div>
+
+
+</div>
+</div>
+
+<script>
+const subjects8 = ["EVS\/Science","India Awareness","Math","Reading"];
+const schoolAvg8 = [85.83,50.83,85,67.5];
+const testAvg8 = [60.77,38.22,54.07,48.42];
+
+// Bar Chart for grade 8
+new Chart(document.getElementById('barChart8').getContext('2d'), {
+type: 'bar',
+data: {
+labels: subjects8,
+datasets: [{
+label: 'School Average',
+data: schoolAvg8,
+backgroundColor: '#4472C4',
+order: 2
+},{
+label: 'National Average',
+data: testAvg8,
+type: 'line',
+borderColor: '#C00000',
+borderWidth: 2,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0,
+order: 1
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: true,
+animation: {
+duration: 0
+},
+scales: {
+y: {
+beginAtZero: true,
+max: 100,
+ticks: {
+callback: v => v.toFixed(2) + '%',
+font: { size: 9 }
+},
+grid: { color: '#E0E0E0' }
+},
+x: {
+grid: { display: false },
+ticks: { font: { size: 9 } }
+}
+}
+}
+});
+
+// Radar Chart for grade 8
+new Chart(document.getElementById('radarChart8').getContext('2d'), {
+type: 'radar',
+data: {
+labels: subjects8,
+datasets: [{
+label: 'School Average',
+data: schoolAvg8,
+backgroundColor: 'rgba(68,114,196,0.3)',
+borderColor: '#4472C4',
+borderWidth: 2,
+pointRadius: 4
+},{
+label: 'National Average',
+data: testAvg8,
+backgroundColor: 'rgba(192,0,0,0.2)',
+borderColor: '#C00000',
+borderWidth: 2,
+pointRadius: 4
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: true,
+animation: {
+duration: 0
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 10,
+callback: value => value + '%',
+font: { size: 10 }
+},
+pointLabels: {
+font: { size: 11 }
+}
+}
+},
+plugins: {
+legend: {
+display: true,
+position: 'bottom'
+}
+} 
+}
+});
+</script>
+ 
+
+
+
+<!-- ===== SECTION 2 ===== -->
+ <div class="page-break"></div>
+<h2>2. Competency-Wise Performance</h2>
+<p>This section breaks down performance of school students by specific competence within each subject.</p>
+
+
+<h3>Grade 3 - EVS/Science Competency based Performance:</h3>
+<div class="split-box">
+<!-- LEFT SIDE CHART -->
+<div class="split-left">
+<canvas id="radarChart_3_evsscience"></canvas>
+</div>
+
+<!-- RIGHT SIDE TABLE -->
+<div class="split-right">
+
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Performance Band</th>
+<th>Competency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1 - Significantly below  National Average</strong></td>
+<td>3.C-1.1, 3.C-1.2, 3.C-2. 1, 3.C-2.2</td>
+</tr>
+<tr>
+<td><strong>2 - Below  National Average</strong></td>
+<td>3.C- 5.3, 3.C-1.3</td>
+</tr>
+<tr>
+<td><strong>3 - In line with  National Average</strong></td>
+<td>3.C-3.1, 3.C-3.2, 3.C-4.1</td>
+</tr>
+<tr>
+<td><strong>4 - Above  National Average</strong></td>
+<td>3.C- 6.2</td>
+</tr>
+<tr>
+<td><strong>5 -Significantly above  National Average</strong></td>
+<td>3.C- 7.2, 3.C-4.7</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<script>
+new Chart(document.getElementById('radarChart_3_evsscience'), {
+type: 'radar',
+data: {
+labels: ["3.C- 5.3","3.C- 6.2","3.C- 7.2","3.C-1.1","3.C-1.2","3.C-1.3","3.C-2. 1","3.C-2.2","3.C-3.1","3.C-3.2","3.C-4.1","3.C-4.7"],
+datasets: [{
+label: 'School Average',
+data: [66.6666667,91.6666667,83.3333333,58.3333333,61.1111111,75,50,44.4444444,75,83.3333333,83.3333333,100],
+borderColor: '#2F5597',
+backgroundColor: 'rgba(47,85,151,0.08)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#2F5597',
+tension: 0.2
+},{
+label: 'National Average',
+data: [74.537037,83.3333333,71.6049383,83.5648148,81.17283950000001,82.4074074,75.9259259,75,75,84.2592593,79.0123457,79.6296296],
+borderColor: '#C00000',
+backgroundColor: 'rgba(192,0,0,0.05)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0.2
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+animation: {
+duration: 0
+},
+plugins: {
+legend: {
+position: 'top',
+labels: {
+boxWidth: 15,
+padding: 15
+}
+}
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 25,
+callback: function(value) {
+return value + "%";
+},
+backdropColor: 'transparent'
+},
+grid: {
+color: 'rgba(0,0,0,0.1)'
+},
+angleLines: {
+color: 'rgba(0,0,0,0.15)'
+},
+pointLabels: {
+font: {
+size: 10
+}
+}
+}
+}
+}
+});
+</script>
+
+<h3>Grade 3 - Competency based Highlights : EVS/Science</h3>
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Competency</th>
+<th>Competency Description</th>
+<th>School Competency Average</th>
+<th>National Competency Average</th>
+<th>Variance</th>
+<th>Performance Band</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3.C- 5.3</td>
+<td>Reads simple maps of city, state, and country to identify natural and human-made features (well, lake, post office, school, hospital) with reference to symbols and directions.</td>
+<td>66.67%</td>
+<td>74.54%</td>
+<td>-7.87%</td>
+<td class="band-orange">Below  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C- 6.2</td>
+<td>Presents observations and findings through different creative modes (drawing, diagram, poem, play, skit, oral and written expression).</td>
+<td>91.67%</td>
+<td>83.33%</td>
+<td>8.33%</td>
+<td class="band-lightgreen">Above  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C- 7.2</td>
+<td>Gains familiarity with disciplinary core ideas in the natural sciences, as well as in engineering, technology, and applications of science, which reflect the content that will be learned across subject areas in later Grades.</td>
+<td>83.33%</td>
+<td>71.60%</td>
+<td>11.73%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-1.1</td>
+<td>Observes and identifies the natural (insects, plants, birds, animals, geographical features, sun and moon, stars, planets, natural resources) and social (houses, relationships) components in their immediate environment.</td>
+<td>58.33%</td>
+<td>83.56%</td>
+<td>-25.23%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-1.2</td>
+<td>Describes relationships (including between humans and animals/nature) and traditions (art forms, celebrations, festivals) in the family and community</td>
+<td>61.11%</td>
+<td>81.17%</td>
+<td>-20.06%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-1.3</td>
+<td>Asks questions and makes predictions about simple patterns (season change, food chain, phases of the moon, movement of stars and planets, shapes of trees, plants, leaves, and flowers, rituals, celebrations) observed in the immediate environment</td>
+<td>75.00%</td>
+<td>82.41%</td>
+<td>-7.41%</td>
+<td class="band-orange">Below  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-2. 1</td>
+<td>Identifies natural and human-made systems that support their lives (water supply, water cycle, river flow systems, seasons, life cycle of plants and animals, food, household items, transport, communication, electricity in the home).</td>
+<td>50.00%</td>
+<td>75.93%</td>
+<td>-25.93%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-2.2</td>
+<td>Describes the relationship between the natural environment and cultural practices in their immediate environment (nature of work, food, festivals, traditions).</td>
+<td>44.44%</td>
+<td>75.00%</td>
+<td>-30.56%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-3.1</td>
+<td>Describes the basic safety needs and protection (health and hygiene, food, water, shelter, precautions, awareness of emergencies, abuse, and unsafe situations) of humans, birds, and animals.</td>
+<td>75.00%</td>
+<td>75.00%</td>
+<td>0.00%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-3.2</td>
+<td>Discusses how to prepare for emergencies (smoke, fire, small injuries, burns, electrical safety, unseasonal rains, fallen trees) based on discussions with family and community, or personal experiences.</td>
+<td>83.33%</td>
+<td>84.26%</td>
+<td>-0.93%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-4.1</td>
+<td>Observes and describes diversity among plants, birds, and animals in their immediate environment (shape, sounds, food habits, growth, habitat).</td>
+<td>83.33%</td>
+<td>79.01%</td>
+<td>4.32%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-4.7</td>
+<td>Learns about basic social and behavioural norms, values, and dispositions that benefit our social and natural environments and that help our society function smoothly (using dustbins, standing in queues, conserving water, using public transportation, keeping ones environment clean, always helping others in need regardless of background).</td>
+<td>100.00%</td>
+<td>79.63%</td>
+<td>20.37%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+</tbody>
+</table>
+<hr>
+	<div class="page-break"></div>
+
+<h3>Grade 3 - India Awareness Competency based Performance:</h3>
+<div class="split-box">
+<!-- LEFT SIDE CHART -->
+<div class="split-left">
+<canvas id="radarChart_3_india-awareness"></canvas>
+</div>
+
+<!-- RIGHT SIDE TABLE -->
+<div class="split-right">
+
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Performance Band</th>
+<th>Competency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1 - Significantly below  National Average</strong></td>
+<td>3.C-1.2, 3.C-2.1, 3.C-2.2, 3.C-3.2</td>
+</tr>
+<tr>
+<td><strong>3 - In line with  National Average</strong></td>
+<td>3.C-1.1</td>
+</tr>
+<tr>
+<td><strong>5 -Significantly above  National Average</strong></td>
+<td>3.C-3.1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<script>
+new Chart(document.getElementById('radarChart_3_india-awareness'), {
+type: 'radar',
+data: {
+labels: ["3.C-1.1","3.C-1.2","3.C-2.1","3.C-2.2","3.C-3.1","3.C-3.2"],
+datasets: [{
+label: 'School Average',
+data: [54.1666667,43.75,56.25,54.1666667,54.1666667,50],
+borderColor: '#2F5597',
+backgroundColor: 'rgba(47,85,151,0.08)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#2F5597',
+tension: 0.2
+},{
+label: 'National Average',
+data: [53.431372499999995,68.37349400000001,71.69811320000001,64.7435897,38.888888900000005,68.4210526],
+borderColor: '#C00000',
+backgroundColor: 'rgba(192,0,0,0.05)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0.2
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+animation: {
+duration: 0
+},
+plugins: {
+legend: {
+position: 'top',
+labels: {
+boxWidth: 15,
+padding: 15
+}
+}
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 25,
+callback: function(value) {
+return value + "%";
+},
+backdropColor: 'transparent'
+},
+grid: {
+color: 'rgba(0,0,0,0.1)'
+},
+angleLines: {
+color: 'rgba(0,0,0,0.15)'
+},
+pointLabels: {
+font: {
+size: 10
+}
+}
+}
+}
+}
+});
+</script>
+
+<h3>Grade 3 - Competency based Highlights : India Awareness</h3>
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Competency</th>
+<th>Competency Description</th>
+<th>School Competency Average</th>
+<th>National Competency Average</th>
+<th>Variance</th>
+<th>Performance Band</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3.C-1.1</td>
+<td>Understands the meaning and significance of national symbols, commemorative days, and civic duties.</td>
+<td>54.17%</td>
+<td>53.43%</td>
+<td>0.74%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-1.2</td>
+<td>Recognises and reflects on values and behaviours that promote responsibility in school, community, and public life.</td>
+<td>43.75%</td>
+<td>68.37%</td>
+<td>-24.62%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-2.1</td>
+<td>Identifies and compares cultural elements such as language, food, festivals, dress, and art from across India.</td>
+<td>56.25%</td>
+<td>71.70%</td>
+<td>-15.45%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-2.2</td>
+<td>Recognises natural and environmental features of India and connects them to traditions, livelihoods, and sustainable practices.</td>
+<td>54.17%</td>
+<td>64.74%</td>
+<td>-10.58%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-3.1</td>
+<td>Recalls key people, events, and stories from Indias past and connects them to values, contributions, or messages.</td>
+<td>54.17%</td>
+<td>38.89%</td>
+<td>15.28%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-3.2</td>
+<td>Recognises the contributions of community heroes, cultural leaders, or knowledge traditions that have shaped Indian society.</td>
+<td>50.00%</td>
+<td>68.42%</td>
+<td>-18.42%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+</tbody>
+</table>
+<hr>
+	<div class="page-break"></div>
+
+<h3>Grade 3 - Math Competency based Performance:</h3>
+<div class="split-box">
+<!-- LEFT SIDE CHART -->
+<div class="split-left">
+<canvas id="radarChart_3_math"></canvas>
+</div>
+
+<!-- RIGHT SIDE TABLE -->
+<div class="split-right">
+
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Performance Band</th>
+<th>Competency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1 - Significantly below  National Average</strong></td>
+<td>3.C-1.1, 3.C-1.2, 3.C-2.3, 3.C-3.4, 3.C-3.5, 3.C-3.6, 3.C-4.1</td>
+</tr>
+<tr>
+<td><strong>2 - Below  National Average</strong></td>
+<td>3.C-1.3, 3.C-3.7</td>
+</tr>
+<tr>
+<td><strong>3 - In line with  National Average</strong></td>
+<td>3.C-1.4, 3.C-2.1, 3.C-3.3</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<script>
+new Chart(document.getElementById('radarChart_3_math'), {
+type: 'radar',
+data: {
+labels: ["3.C-1.1","3.C-1.2","3.C-1.3","3.C-1.4","3.C-2.1","3.C-2.3","3.C-3.3","3.C-3.4","3.C-3.5","3.C-3.6","3.C-3.7","3.C-4.1"],
+datasets: [{
+label: 'School Average',
+data: [63.33333330000001,36.6666667,45,50,50,40,50,40,46.6666667,10,30,45],
+borderColor: '#2F5597',
+backgroundColor: 'rgba(47,85,151,0.08)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#2F5597',
+tension: 0.2
+},{
+label: 'National Average',
+data: [80.29629630000001,50.962962999999995,52.8148148,51.555555600000005,54.6666667,51.7777778,48.444444399999995,54.222222200000004,57.1851852,27.555555599999998,36.8888889,61.444444399999995],
+borderColor: '#C00000',
+backgroundColor: 'rgba(192,0,0,0.05)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0.2
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+animation: {
+duration: 0
+},
+plugins: {
+legend: {
+position: 'top',
+labels: {
+boxWidth: 15,
+padding: 15
+}
+}
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 25,
+callback: function(value) {
+return value + "%";
+},
+backdropColor: 'transparent'
+},
+grid: {
+color: 'rgba(0,0,0,0.1)'
+},
+angleLines: {
+color: 'rgba(0,0,0,0.15)'
+},
+pointLabels: {
+font: {
+size: 10
+}
+}
+}
+}
+}
+});
+</script>
+
+<h3>Grade 3 - Competency based Highlights : Math</h3>
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Competency</th>
+<th>Competency Description</th>
+<th>School Competency Average</th>
+<th>National Competency Average</th>
+<th>Variance</th>
+<th>Performance Band</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3.C-1.1</td>
+<td>Represents numbers using the place value structure of the Indian number system, compares whole numbers, and knows and can read the names of very large numbers.</td>
+<td>63.33%</td>
+<td>80.30%</td>
+<td>-16.96%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-1.2</td>
+<td>Represents and compares commonly used fractions in daily life (such as , ) as parts of unit wholes, as locations on number lines and as divisions of whole numbers.</td>
+<td>36.67%</td>
+<td>50.96%</td>
+<td>-14.30%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-1.3</td>
+<td>Understands and visualises arithmetic operations and the relationships among them, knows addition and multiplication tables at least up to 1010 and applies the four basic operations on whole numbers to solve daily life problems.</td>
+<td>45.00%</td>
+<td>52.81%</td>
+<td>-7.81%</td>
+<td class="band-orange">Below  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-1.4</td>
+<td>Recognises, describes, and extends simple number patterns such as odd numbers, even numbers, square numbers, cubes, powers of 2, powers of 10, and Virahanka-Fibonacci numbers.</td>
+<td>50.00%</td>
+<td>51.56%</td>
+<td>-1.56%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-2.1</td>
+<td>Identifies, compares, and analyses attributes of two- and three-dimensional shapes and develops vocabulary to describe their attributes or properties</td>
+<td>50.00%</td>
+<td>54.67%</td>
+<td>-4.67%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-2.3</td>
+<td>Recognises and creates symmetry (reflection, rotation) in familiar 2D and 3D shapes.</td>
+<td>40.00%</td>
+<td>51.78%</td>
+<td>-11.78%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-3.3</td>
+<td>Carries out simple unit conversions, such as from centimetres to metres, within a system of measurement.</td>
+<td>50.00%</td>
+<td>48.44%</td>
+<td>1.56%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-3.4</td>
+<td>Understands the definition and formula for the area of a square or rectangle as length times breadth.</td>
+<td>40.00%</td>
+<td>54.22%</td>
+<td>-14.22%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-3.5</td>
+<td>Devises strategies for estimating the distance, length, time, perimeter (for regular and irregular shapes), area (for regular and irregular shapes), weight, and volume and verifies the same using standard units.</td>
+<td>46.67%</td>
+<td>57.19%</td>
+<td>-10.52%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-3.6</td>
+<td>Deduces that shapes having equal areas can have different perimeters and shapes having equal perimetres can have different areas.</td>
+<td>10.00%</td>
+<td>27.56%</td>
+<td>-17.56%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-3.7</td>
+<td>Evaluates the conservation of attributes like length and volume, and solves daily-life problems related to them</td>
+<td>30.00%</td>
+<td>36.89%</td>
+<td>-6.89%</td>
+<td class="band-orange">Below  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-4.1</td>
+<td>Solves puzzles and daily-life problems involving one or more operations on whole numbers (including word puzzles and puzzles from &#039;recreational&#039; areas, such as the construction of magic squares).</td>
+<td>45.00%</td>
+<td>61.44%</td>
+<td>-16.44%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+</tbody>
+</table>
+<hr>
+	<div class="page-break"></div>
+
+<h3>Grade 3 - Reading Competency based Performance:</h3>
+<div class="split-box">
+<!-- LEFT SIDE CHART -->
+<div class="split-left">
+<canvas id="radarChart_3_reading"></canvas>
+</div>
+
+<!-- RIGHT SIDE TABLE -->
+<div class="split-right">
+
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Performance Band</th>
+<th>Competency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1 - Significantly below  National Average</strong></td>
+<td>3.C-3.4</td>
+</tr>
+<tr>
+<td><strong>2 - Below  National Average</strong></td>
+<td>3.C-4.1</td>
+</tr>
+<tr>
+<td><strong>3 - In line with  National Average</strong></td>
+<td>3.C-2.2, 3.C-4.2</td>
+</tr>
+<tr>
+<td><strong>5 -Significantly above  National Average</strong></td>
+<td>3.C-2.1, 3.C-3.1, 3.C-3.2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<script>
+new Chart(document.getElementById('radarChart_3_reading'), {
+type: 'radar',
+data: {
+labels: ["3.C-2.1","3.C-2.2","3.C-3.1","3.C-3.2","3.C-3.4","3.C-4.1","3.C-4.2"],
+datasets: [{
+label: 'School Average',
+data: [77.0833333,66.6666667,70.8333333,64.2857143,16.6666667,54.1666667,61.1111111],
+borderColor: '#2F5597',
+backgroundColor: 'rgba(47,85,151,0.08)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#2F5597',
+tension: 0.2
+},{
+label: 'National Average',
+data: [56.8515498,62.790697699999996,51.3081395,52.437223,44.186046499999996,61.4825581,60.8527132],
+borderColor: '#C00000',
+backgroundColor: 'rgba(192,0,0,0.05)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0.2
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+animation: {
+duration: 0
+},
+plugins: {
+legend: {
+position: 'top',
+labels: {
+boxWidth: 15,
+padding: 15
+}
+}
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 25,
+callback: function(value) {
+return value + "%";
+},
+backdropColor: 'transparent'
+},
+grid: {
+color: 'rgba(0,0,0,0.1)'
+},
+angleLines: {
+color: 'rgba(0,0,0,0.15)'
+},
+pointLabels: {
+font: {
+size: 10
+}
+}
+}
+}
+}
+});
+</script>
+
+<h3>Grade 3 - Competency based Highlights : Reading</h3>
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Competency</th>
+<th>Competency Description</th>
+<th>School Competency Average</th>
+<th>National Competency Average</th>
+<th>Variance</th>
+<th>Performance Band</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3.C-2.1</td>
+<td>Applies varied comprehension strategies (inferring, predicting, visualising) to understand different texts.</td>
+<td>77.08%</td>
+<td>56.85%</td>
+<td>20.23%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-2.2</td>
+<td>Understands main ideas and draws essential conclusions from the material read.</td>
+<td>66.67%</td>
+<td>62.79%</td>
+<td>3.88%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-3.1</td>
+<td>Uses writing strategies, such as sequencing, identifying headings/sub-headings, the beginning, and ending, and forming paragraphs.</td>
+<td>70.83%</td>
+<td>51.31%</td>
+<td>19.53%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-3.2</td>
+<td>Writes clear and coherent paragraphs that convey their understanding of a given topic/concept or a reading of a text.</td>
+<td>64.29%</td>
+<td>52.44%</td>
+<td>11.85%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-3.4</td>
+<td>Uses appropriate grammar and structure in their writing.</td>
+<td>16.67%</td>
+<td>44.19%</td>
+<td>-27.52%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-4.1</td>
+<td>Discusses meanings of words and develops vocabulary by listening to and reading a variety of texts.</td>
+<td>54.17%</td>
+<td>61.48%</td>
+<td>-7.32%</td>
+<td class="band-orange">Below  National Average</td>
+</tr>
+
+
+<tr>
+<td>3.C-4.2</td>
+<td>Discusses meanings of words and develops vocabulary by listening to and reading a variety of texts or other content areas</td>
+<td>61.11%</td>
+<td>60.85%</td>
+<td>0.26%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+</tbody>
+</table>
+<hr>
+	<div class="page-break"></div>
+
+<h3>Grade 4 - EVS/Science Competency based Performance:</h3>
+<div class="split-box">
+<!-- LEFT SIDE CHART -->
+<div class="split-left">
+<canvas id="radarChart_4_evsscience"></canvas>
+</div>
+
+<!-- RIGHT SIDE TABLE -->
+<div class="split-right">
+
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Performance Band</th>
+<th>Competency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1 - Significantly below  National Average</strong></td>
+<td>4.C- 5.3, 4.C-1.1, 4.C-1.3, 4.C-2.1, 4.C-2.2, 4.C-3.1, 4.C-4. 1, 4.C-4. 2, 4.C-4.3, 4.C-7.1</td>
+</tr>
+<tr>
+<td><strong>3 - In line with  National Average</strong></td>
+<td>4.C-1.2</td>
+</tr>
+<tr>
+<td><strong>5 -Significantly above  National Average</strong></td>
+<td>4.C-4.4, 4.C-4.6, 4.C-6.2, 4.C-7.2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<script>
+new Chart(document.getElementById('radarChart_4_evsscience'), {
+type: 'radar',
+data: {
+labels: ["4.C- 5.3","4.C-1.1","4.C-1.2","4.C-1.3","4.C-2.1","4.C-2.2","4.C-3.1","4.C-4. 1","4.C-4. 2","4.C-4.3","4.C-4.4","4.C-4.6","4.C-6.2","4.C-7.1","4.C-7.2"],
+datasets: [{
+label: 'School Average',
+data: [33.3333333,44.4444444,83.3333333,50,33.3333333,44.4444444,16.6666667,50,66.6666667,33.3333333,100,100,100,55.5555556,83.3333333],
+borderColor: '#2F5597',
+backgroundColor: 'rgba(47,85,151,0.08)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#2F5597',
+tension: 0.2
+},{
+label: 'National Average',
+data: [70.7920792,71.9471947,81.68316829999999,60.891089099999995,74.2574257,77.2277228,70.2970297,84.1584158,83.1683168,84.1584158,81.1881188,87.12871290000001,87.12871290000001,70.9570957,69.8019802],
+borderColor: '#C00000',
+backgroundColor: 'rgba(192,0,0,0.05)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0.2
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+animation: {
+duration: 0
+},
+plugins: {
+legend: {
+position: 'top',
+labels: {
+boxWidth: 15,
+padding: 15
+}
+}
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 25,
+callback: function(value) {
+return value + "%";
+},
+backdropColor: 'transparent'
+},
+grid: {
+color: 'rgba(0,0,0,0.1)'
+},
+angleLines: {
+color: 'rgba(0,0,0,0.15)'
+},
+pointLabels: {
+font: {
+size: 10
+}
+}
+}
+}
+}
+});
+</script>
+
+<h3>Grade 4 - Competency based Highlights : EVS/Science</h3>
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Competency</th>
+<th>Competency Description</th>
+<th>School Competency Average</th>
+<th>National Competency Average</th>
+<th>Variance</th>
+<th>Performance Band</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4.C- 5.3</td>
+<td>Reads simple maps of city, state, and country to identify natural and human-made features (well, lake, post office, school, hospital) with reference to symbols and directions.</td>
+<td>33.33%</td>
+<td>70.79%</td>
+<td>-37.46%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-1.1</td>
+<td>Observes and identifies the natural (insects, plants, birds, animals, geographical features, sun and moon, stars, planets, natural resources) and social (houses, relationships) components in their immediate environment.</td>
+<td>44.44%</td>
+<td>71.95%</td>
+<td>-27.50%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-1.2</td>
+<td>Describes relationships (including between humans and animals/nature) and traditions (art forms, celebrations, festivals) in the family and community.</td>
+<td>83.33%</td>
+<td>81.68%</td>
+<td>1.65%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-1.3</td>
+<td>Asks questions and makes predictions about simple patterns (season change, food chain, phases of the moon, movement of stars and planets, shapes of trees, plants, leaves, and flowers, rituals, celebrations) observed in the immediate environment.</td>
+<td>50.00%</td>
+<td>60.89%</td>
+<td>-10.89%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-2.1</td>
+<td>Identifies natural and human-made systems that support their lives (water supply, water cycle, river flow systems, seasons, life cycle of plants and animals, food, household items, transport, communication, electricity in the home).</td>
+<td>33.33%</td>
+<td>74.26%</td>
+<td>-40.92%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-2.2</td>
+<td>Describes the relationship between the natural environment and cultural practices in their immediate environment (nature of work, food, festivals, traditions).</td>
+<td>44.44%</td>
+<td>77.23%</td>
+<td>-32.78%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-3.1</td>
+<td>Describes the basic safety needs and protection (health and hygiene, food, water, shelter, precautions, awareness of emergencies, abuse, and unsafe situations) of humans, birds, and animals.</td>
+<td>16.67%</td>
+<td>70.30%</td>
+<td>-53.63%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-4. 1</td>
+<td>Observes and describes diversity among plants, birds, and animals in their immediate environment (shape, sounds, food habits, growth, habitat).</td>
+<td>50.00%</td>
+<td>84.16%</td>
+<td>-34.16%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-4. 2</td>
+<td>Observes and describes cultural diversity in their immediate environment (food, clothing, games, different seasons, festivals related to harvest and sowing).</td>
+<td>66.67%</td>
+<td>83.17%</td>
+<td>-16.50%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-4.3</td>
+<td>Describes the usage of natural resources in their immediate environment.</td>
+<td>33.33%</td>
+<td>84.16%</td>
+<td>-50.83%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-4.4</td>
+<td>Demonstrates how natural resources can be shared, maintained, and conserved (trees, use of rainwater, benefits of millets).</td>
+<td>100.00%</td>
+<td>81.19%</td>
+<td>18.81%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-4.6</td>
+<td>Identifies the needs of people in different situations  in terms of access to resources, equal opportunities, work distribution, and shelter.</td>
+<td>100.00%</td>
+<td>87.13%</td>
+<td>12.87%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-6.2</td>
+<td>Presents observations and findings through different creative modes (drawing, diagram, poem, play, skit, oral and written expression).</td>
+<td>100.00%</td>
+<td>87.13%</td>
+<td>12.87%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-7.1</td>
+<td>Gains familiarity with using the scientific method in investigations, as well as familiarity with other crosscutting concepts such as energy, matter, and systems that apply across the domains of science and engineering.</td>
+<td>55.56%</td>
+<td>70.96%</td>
+<td>-15.40%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-7.2</td>
+<td>Gains familiarity with disciplinary core ideas in the natural sciences, as well as in engineering, technology, and applications of science, which reflect the content that will be learned across subject areas in later Grades.</td>
+<td>83.33%</td>
+<td>69.80%</td>
+<td>13.53%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+</tbody>
+</table>
+<hr>
+	<div class="page-break"></div>
+
+<h3>Grade 4 - India Awareness Competency based Performance:</h3>
+<div class="split-box">
+<!-- LEFT SIDE CHART -->
+<div class="split-left">
+<canvas id="radarChart_4_india-awareness"></canvas>
+</div>
+
+<!-- RIGHT SIDE TABLE -->
+<div class="split-right">
+
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Performance Band</th>
+<th>Competency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1 - Significantly below  National Average</strong></td>
+<td>4.C-2.1</td>
+</tr>
+<tr>
+<td><strong>2 - Below  National Average</strong></td>
+<td>4.C-2.2</td>
+</tr>
+<tr>
+<td><strong>3 - In line with  National Average</strong></td>
+<td>4.C-1.1, 4.C-1.2, 4.C-3.1, 4.C-3.2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<script>
+new Chart(document.getElementById('radarChart_4_india-awareness'), {
+type: 'radar',
+data: {
+labels: ["4.C-1.1","4.C-1.2","4.C-2.1","4.C-2.2","4.C-3.1","4.C-3.2"],
+datasets: [{
+label: 'School Average',
+data: [60,52.380952400000005,41.6666667,50,46.6666667,55.5555556],
+borderColor: '#2F5597',
+backgroundColor: 'rgba(47,85,151,0.08)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#2F5597',
+tension: 0.2
+},{
+label: 'National Average',
+data: [59.0769231,55.6109726,56.25,55.897435900000005,51.3846154,51.7730496],
+borderColor: '#C00000',
+backgroundColor: 'rgba(192,0,0,0.05)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0.2
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+animation: {
+duration: 0
+},
+plugins: {
+legend: {
+position: 'top',
+labels: {
+boxWidth: 15,
+padding: 15
+}
+}
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 25,
+callback: function(value) {
+return value + "%";
+},
+backdropColor: 'transparent'
+},
+grid: {
+color: 'rgba(0,0,0,0.1)'
+},
+angleLines: {
+color: 'rgba(0,0,0,0.15)'
+},
+pointLabels: {
+font: {
+size: 10
+}
+}
+}
+}
+}
+});
+</script>
+
+<h3>Grade 4 - Competency based Highlights : India Awareness</h3>
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Competency</th>
+<th>Competency Description</th>
+<th>School Competency Average</th>
+<th>National Competency Average</th>
+<th>Variance</th>
+<th>Performance Band</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4.C-1.1</td>
+<td>Understands the meaning and significance of national symbols, commemorative days, and civic duties.</td>
+<td>60.00%</td>
+<td>59.08%</td>
+<td>0.92%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-1.2</td>
+<td>Recognises and reflects on values and behaviours that promote responsibility in school, community, and public life.</td>
+<td>52.38%</td>
+<td>55.61%</td>
+<td>-3.23%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-2.1</td>
+<td>Identifies and compares cultural elements such as language, food, festivals, dress, and art from across India.</td>
+<td>41.67%</td>
+<td>56.25%</td>
+<td>-14.58%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-2.2</td>
+<td>Recognises natural and environmental features of India and connects them to traditions, livelihoods, and sustainable practices.</td>
+<td>50.00%</td>
+<td>55.90%</td>
+<td>-5.90%</td>
+<td class="band-orange">Below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-3.1</td>
+<td>Recalls key people, events, and stories from Indias past and connects them to values, contributions, or messages.</td>
+<td>46.67%</td>
+<td>51.38%</td>
+<td>-4.72%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-3.2</td>
+<td>Recognises the contributions of community heroes, cultural leaders, or knowledge traditions that have shaped Indian society.</td>
+<td>55.56%</td>
+<td>51.77%</td>
+<td>3.78%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+</tbody>
+</table>
+<hr>
+	<div class="page-break"></div>
+
+<h3>Grade 4 - Math Competency based Performance:</h3>
+<div class="split-box">
+<!-- LEFT SIDE CHART -->
+<div class="split-left">
+<canvas id="radarChart_4_math"></canvas>
+</div>
+
+<!-- RIGHT SIDE TABLE -->
+<div class="split-right">
+
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Performance Band</th>
+<th>Competency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1 - Significantly below  National Average</strong></td>
+<td>4.C-1.1, 4.C-1.3, 4.C-3.5, 4.C-3.6, 4.C-3.7, 4.C-4.1, 4.C-4.2</td>
+</tr>
+<tr>
+<td><strong>2 - Below  National Average</strong></td>
+<td>4.C-1.2, 4.C-2.4</td>
+</tr>
+<tr>
+<td><strong>3 - In line with  National Average</strong></td>
+<td>4.C-2.1</td>
+</tr>
+<tr>
+<td><strong>5 -Significantly above  National Average</strong></td>
+<td>4.C-1.4, 4.C-2.3, 4.C-3.2, 4.C-3.3, 4.C-3.4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<script>
+new Chart(document.getElementById('radarChart_4_math'), {
+type: 'radar',
+data: {
+labels: ["4.C-1.1","4.C-1.2","4.C-1.3","4.C-1.4","4.C-2.1","4.C-2.3","4.C-2.4","4.C-3.2","4.C-3.3","4.C-3.4","4.C-3.5","4.C-3.6","4.C-3.7","4.C-4.1","4.C-4.2"],
+datasets: [{
+label: 'School Average',
+data: [50,40,0,83.3333333,66.6666667,100,66.6666667,100,66.6666667,66.6666667,33.3333333,0,33.3333333,0,25],
+borderColor: '#2F5597',
+backgroundColor: 'rgba(47,85,151,0.08)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#2F5597',
+tension: 0.2
+},{
+label: 'National Average',
+data: [65.5263158,46.7368421,40.7894737,65,67.8947368,35.263157899999996,73.4210526,53.1578947,53.6842105,30,48.9473684,38.9473684,62.1052632,55.7894737,39.2105263],
+borderColor: '#C00000',
+backgroundColor: 'rgba(192,0,0,0.05)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0.2
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+animation: {
+duration: 0
+},
+plugins: {
+legend: {
+position: 'top',
+labels: {
+boxWidth: 15,
+padding: 15
+}
+}
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 25,
+callback: function(value) {
+return value + "%";
+},
+backdropColor: 'transparent'
+},
+grid: {
+color: 'rgba(0,0,0,0.1)'
+},
+angleLines: {
+color: 'rgba(0,0,0,0.15)'
+},
+pointLabels: {
+font: {
+size: 10
+}
+}
+}
+}
+}
+});
+</script>
+
+<h3>Grade 4 - Competency based Highlights : Math</h3>
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Competency</th>
+<th>Competency Description</th>
+<th>School Competency Average</th>
+<th>National Competency Average</th>
+<th>Variance</th>
+<th>Performance Band</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4.C-1.1</td>
+<td>Represents numbers using the place value structure of the Indian number system, compares whole numbers, and knows and can read the names of very large numbers.</td>
+<td>50.00%</td>
+<td>65.53%</td>
+<td>-15.53%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-1.2</td>
+<td>Represents and compares commonly used fractions in daily life (such as , ) as parts of unit wholes, as locations on number lines and as divisions of whole numbers.</td>
+<td>40.00%</td>
+<td>46.74%</td>
+<td>-6.74%</td>
+<td class="band-orange">Below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-1.3</td>
+<td>Understands and visualises arithmetic operations and the relationships among them, knows addition and multiplication tables at least up to 1010 (Pahade), and applies the four basic operations on whole numbers to solve daily life problems.</td>
+<td>0.00%</td>
+<td>40.79%</td>
+<td>-40.79%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-1.4</td>
+<td>Recognises, describes, and extends simple number patterns such as odd numbers, even numbers, square numbers, cubes, powers of 2, powers of 10, and Virahanka-Fibonacci numbers.</td>
+<td>83.33%</td>
+<td>65.00%</td>
+<td>18.33%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-2.1</td>
+<td>Identifies, compares, and analyses attributes of two- and three-dimensional shapes and develops vocabulary to describe their attributes or properties.</td>
+<td>66.67%</td>
+<td>67.89%</td>
+<td>-1.23%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-2.3</td>
+<td>Recognises and creates symmetry (reflection, rotation) in familiar 2D and 3D shapes.</td>
+<td>100.00%</td>
+<td>35.26%</td>
+<td>64.74%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-2.4</td>
+<td>Discovers, recognises, describes, and extends patterns in 2D and 3D shapes</td>
+<td>66.67%</td>
+<td>73.42%</td>
+<td>-6.75%</td>
+<td class="band-orange">Below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-3.2</td>
+<td>Uses an appropriate unit and tool for the attribute (like length, perimeter, time, weight, volume) being measured.</td>
+<td>100.00%</td>
+<td>53.16%</td>
+<td>46.84%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-3.3</td>
+<td>Carries out simple unit conversions, such as from centimetres to metres, within a system of measurement.</td>
+<td>66.67%</td>
+<td>53.68%</td>
+<td>12.98%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-3.4</td>
+<td>Understands the definition and formula for the area of a square or rectangle as length times breadth.</td>
+<td>66.67%</td>
+<td>30.00%</td>
+<td>36.67%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-3.5</td>
+<td>Devises strategies for estimating the distance, length, time, perimeter (for regular and irregular shapes), area (for regular and irregular shapes), weight, and volume, and verifies the same using standard units.</td>
+<td>33.33%</td>
+<td>48.95%</td>
+<td>-15.61%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-3.6</td>
+<td>Deduces that shapes having equal areas can have different perimeters and shapes having equal perimetres can have different areas.</td>
+<td>0.00%</td>
+<td>38.95%</td>
+<td>-38.95%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-3.7</td>
+<td>Evaluates the conservation of attributes like length and volume, and solves daily-life problems related to them.</td>
+<td>33.33%</td>
+<td>62.11%</td>
+<td>-28.77%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-4.1</td>
+<td>Solves puzzles and daily-life problems involving one or more operations on whole numbers (including word puzzles and puzzles from &#039;recreational&#039; areas, such as the construction of magic squares).</td>
+<td>0.00%</td>
+<td>55.79%</td>
+<td>-55.79%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-4.2</td>
+<td>Learns to systematically count and list all possible permutations or combinations given a constraint, in simple situations (e.g., how to make a committee of two people from a group of five people).</td>
+<td>25.00%</td>
+<td>39.21%</td>
+<td>-14.21%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+</tbody>
+</table>
+<hr>
+	<div class="page-break"></div>
+
+<h3>Grade 4 - Reading Competency based Performance:</h3>
+<div class="split-box">
+<!-- LEFT SIDE CHART -->
+<div class="split-left">
+<canvas id="radarChart_4_reading"></canvas>
+</div>
+
+<!-- RIGHT SIDE TABLE -->
+<div class="split-right">
+
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Performance Band</th>
+<th>Competency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1 - Significantly below  National Average</strong></td>
+<td>4.C-2.1, 4.C-2.2, 4.C-3.2, 4.C-3.3, 4.C-3.4</td>
+</tr>
+<tr>
+<td><strong>3 - In line with  National Average</strong></td>
+<td>4.C-4.1, 4.C-4.2</td>
+</tr>
+<tr>
+<td><strong>5 -Significantly above  National Average</strong></td>
+<td>4.C-3.1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<script>
+new Chart(document.getElementById('radarChart_4_reading'), {
+type: 'radar',
+data: {
+labels: ["4.C-2.1","4.C-2.2","4.C-3.1","4.C-3.2","4.C-3.3","4.C-3.4","4.C-4.1","4.C-4.2"],
+datasets: [{
+label: 'School Average',
+data: [50,37.5,60,25,25,25,70,50],
+borderColor: '#2F5597',
+backgroundColor: 'rgba(47,85,151,0.08)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#2F5597',
+tension: 0.2
+},{
+label: 'National Average',
+data: [74.1197183,57.482394400000004,44.7887324,44.718309899999994,67.2535211,41.2776413,72.39436620000001,50.310559],
+borderColor: '#C00000',
+backgroundColor: 'rgba(192,0,0,0.05)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0.2
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+animation: {
+duration: 0
+},
+plugins: {
+legend: {
+position: 'top',
+labels: {
+boxWidth: 15,
+padding: 15
+}
+}
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 25,
+callback: function(value) {
+return value + "%";
+},
+backdropColor: 'transparent'
+},
+grid: {
+color: 'rgba(0,0,0,0.1)'
+},
+angleLines: {
+color: 'rgba(0,0,0,0.15)'
+},
+pointLabels: {
+font: {
+size: 10
+}
+}
+}
+}
+}
+});
+</script>
+
+<h3>Grade 4 - Competency based Highlights : Reading</h3>
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Competency</th>
+<th>Competency Description</th>
+<th>School Competency Average</th>
+<th>National Competency Average</th>
+<th>Variance</th>
+<th>Performance Band</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4.C-2.1</td>
+<td>Applies varied comprehension strategies (inferring, predicting, visualising) to understand different texts.</td>
+<td>50.00%</td>
+<td>74.12%</td>
+<td>-24.12%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-2.2</td>
+<td>Understands main ideas and draws essential conclusions from the material read.</td>
+<td>37.50%</td>
+<td>57.48%</td>
+<td>-19.98%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-3.1</td>
+<td>Uses writing strategies, such as sequencing, identifying headings/sub-headings, the beginning, and ending, and forming paragraphs.</td>
+<td>60.00%</td>
+<td>44.79%</td>
+<td>15.21%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-3.2</td>
+<td>Writes clear and coherent paragraphs that convey their understanding of a given topic/concept or on a reading of a text.</td>
+<td>25.00%</td>
+<td>44.72%</td>
+<td>-19.72%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-3.3</td>
+<td>Creates posters, invites, simple poems, stories, and dialogues with appropriate information and purpose.</td>
+<td>25.00%</td>
+<td>67.25%</td>
+<td>-42.25%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-3.4</td>
+<td>Uses appropriate grammar and structure in their writing.</td>
+<td>25.00%</td>
+<td>41.28%</td>
+<td>-16.28%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-4.1</td>
+<td>Discusses meanings of words and develops vocabulary by listening to and reading a variety of texts.</td>
+<td>70.00%</td>
+<td>72.39%</td>
+<td>-2.39%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>4.C-4.2</td>
+<td>Discusses meanings of words and develops vocabulary by listening to and reading a variety of texts or other content areas</td>
+<td>50.00%</td>
+<td>50.31%</td>
+<td>-0.31%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+</tbody>
+</table>
+<hr>
+	<div class="page-break"></div>
+
+<h3>Grade 5 - EVS/Science Competency based Performance:</h3>
+<div class="split-box">
+<!-- LEFT SIDE CHART -->
+<div class="split-left">
+<canvas id="radarChart_5_evsscience"></canvas>
+</div>
+
+<!-- RIGHT SIDE TABLE -->
+<div class="split-right">
+
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Performance Band</th>
+<th>Competency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1 - Significantly below  National Average</strong></td>
+<td>5.C-1.1, 5.C-2.2, 5.C-4.2, 5.C-6.2</td>
+</tr>
+<tr>
+<td><strong>2 - Below  National Average</strong></td>
+<td>5.C-3.1</td>
+</tr>
+<tr>
+<td><strong>3 - In line with  National Average</strong></td>
+<td>5.C-1.2, 5.C-1.3, 5.C-2.1, 5.C-3.2, 5.C-4.3</td>
+</tr>
+<tr>
+<td><strong>5 -Significantly above  National Average</strong></td>
+<td>5.C-2..3, 5.C-4.1, 5.C-4.4, 5.C-5.3, 5.C-7.1, 5.C-7.2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<script>
+new Chart(document.getElementById('radarChart_5_evsscience'), {
+type: 'radar',
+data: {
+labels: ["5.C-1.1","5.C-1.2","5.C-1.3","5.C-2..3","5.C-2.1","5.C-2.2","5.C-3.1","5.C-3.2","5.C-4.1","5.C-4.2","5.C-4.3","5.C-4.4","5.C-5.3","5.C-6.2","5.C-7.1","5.C-7.2"],
+datasets: [{
+label: 'School Average',
+data: [44.4444444,83.3333333,66.6666667,83.3333333,72.22222219999999,33.3333333,66.6666667,66.6666667,75,44.4444444,66.6666667,66.6666667,66.6666667,44.4444444,72.22222219999999,77.77777780000001],
+borderColor: '#2F5597',
+backgroundColor: 'rgba(47,85,151,0.08)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#2F5597',
+tension: 0.2
+},{
+label: 'National Average',
+data: [56.013745699999994,85.0515464,69.75945019999999,67.0103093,70.6185567,63.40206189999999,75,65.2061856,61.726804099999995,62.1993127,70.6185567,55.1546392,37.113402099999995,66.6666667,60.824742300000004,61.059189999999994],
+borderColor: '#C00000',
+backgroundColor: 'rgba(192,0,0,0.05)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0.2
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+animation: {
+duration: 0
+},
+plugins: {
+legend: {
+position: 'top',
+labels: {
+boxWidth: 15,
+padding: 15
+}
+}
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 25,
+callback: function(value) {
+return value + "%";
+},
+backdropColor: 'transparent'
+},
+grid: {
+color: 'rgba(0,0,0,0.1)'
+},
+angleLines: {
+color: 'rgba(0,0,0,0.15)'
+},
+pointLabels: {
+font: {
+size: 10
+}
+}
+}
+}
+}
+});
+</script>
+
+<h3>Grade 5 - Competency based Highlights : EVS/Science</h3>
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Competency</th>
+<th>Competency Description</th>
+<th>School Competency Average</th>
+<th>National Competency Average</th>
+<th>Variance</th>
+<th>Performance Band</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5.C-1.1</td>
+<td>Observes and identifies the natural (insects, plants, birds, animals, geographical features, sun and moon, stars, planets, natural resources) and social (houses, relationships) components in their immediate environment.</td>
+<td>44.44%</td>
+<td>56.01%</td>
+<td>-11.57%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-1.2</td>
+<td>Describes relationships (including between humans and animals/nature) and traditions (art forms, celebrations, festivals) in the family and community.</td>
+<td>83.33%</td>
+<td>85.05%</td>
+<td>-1.72%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-1.3</td>
+<td>Asks questions and makes predictions about simple patterns (season change, food chain, phases of the moon, movement of stars and planets, shapes of trees, plants, leaves, and flowers, rituals, celebrations) observed in the immediate environment.</td>
+<td>66.67%</td>
+<td>69.76%</td>
+<td>-3.09%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-2..3</td>
+<td>Connects changes in the environment and the lives of their family and community, as communicated by elders and through local stories (changes in occupation, food habits, resources, celebrations, communication.</td>
+<td>83.33%</td>
+<td>67.01%</td>
+<td>16.32%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-2.1</td>
+<td>Identifies natural and human-made systems that support their lives (water supply, water cycle, river flow systems, seasons, life cycle of plants and animals, food, household items, transport, communication, electricity in the home).</td>
+<td>72.22%</td>
+<td>70.62%</td>
+<td>1.60%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-2.2</td>
+<td>Describes the relationship between the natural environment and cultural practices in their immediate environment (nature of work, food, festivals, traditions.</td>
+<td>33.33%</td>
+<td>63.40%</td>
+<td>-30.07%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-3.1</td>
+<td>Describes the basic safety needs and protection (health and hygiene, food, water, shelter, precautions, awareness of emergencies, abuse, and unsafe situations) of humans, birds, and animals.</td>
+<td>66.67%</td>
+<td>75.00%</td>
+<td>-8.33%</td>
+<td class="band-orange">Below  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-3.2</td>
+<td>Discusses how to prepare for emergencies (smoke, fire, small injuries, burns, electrical safety, unseasonal rains, fallen trees) based on discussions with family and community, or personal experiences.</td>
+<td>66.67%</td>
+<td>65.21%</td>
+<td>1.46%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-4.1</td>
+<td>Observes and describes diversity among plants, birds, and animals in their immediate environment (shape, sounds, food habits, growth, habitat).</td>
+<td>75.00%</td>
+<td>61.73%</td>
+<td>13.27%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-4.2</td>
+<td>Observes and describes cultural diversity in their immediate environment (food, clothing, games, different seasons, festivals related to harvest and sowing).</td>
+<td>44.44%</td>
+<td>62.20%</td>
+<td>-17.75%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-4.3</td>
+<td>Describes usage of natural resources in their immediate environment.</td>
+<td>66.67%</td>
+<td>70.62%</td>
+<td>-3.95%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-4.4</td>
+<td>Demonstrates how natural resources can be shared, maintained, and conserved (trees, use of rainwater, benefits of millets).</td>
+<td>66.67%</td>
+<td>55.15%</td>
+<td>11.51%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-5.3</td>
+<td>Reads simple maps of city, state, and country to identify natural and human-made features (well, lake, post office, school, hospital) with reference to symbols and directions.</td>
+<td>66.67%</td>
+<td>37.11%</td>
+<td>29.55%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-6.2</td>
+<td>Presents observations and findings through different creative modes (drawing, diagram, poem, play, skit, oral and written expression).</td>
+<td>44.44%</td>
+<td>66.67%</td>
+<td>-22.22%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-7.1</td>
+<td>Gains familiarity with using the scientific method in investigations, as well as familiarity with other crosscutting concepts such as energy, matter, and systems that apply across the domains of science and engineering.</td>
+<td>72.22%</td>
+<td>60.82%</td>
+<td>11.40%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-7.2</td>
+<td>Gains familiarity with disciplinary core ideas in the natural sciences, as well as in engineering, technology, and applications of science, which reflect the content that will be learned across subject areas in later Grades.</td>
+<td>77.78%</td>
+<td>61.06%</td>
+<td>16.72%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+</tbody>
+</table>
+<hr>
+	<div class="page-break"></div>
+
+<h3>Grade 5 - India Awareness Competency based Performance:</h3>
+<div class="split-box">
+<!-- LEFT SIDE CHART -->
+<div class="split-left">
+<canvas id="radarChart_5_india-awareness"></canvas>
+</div>
+
+<!-- RIGHT SIDE TABLE -->
+<div class="split-right">
+
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Performance Band</th>
+<th>Competency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>3 - In line with  National Average</strong></td>
+<td>5.C-1.1, 5.C-1.2, 5.C-2.1, 5.C-3.1, 5.C-3.2</td>
+</tr>
+<tr>
+<td><strong>5 -Significantly above  National Average</strong></td>
+<td>5.C-2.2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<script>
+new Chart(document.getElementById('radarChart_5_india-awareness'), {
+type: 'radar',
+data: {
+labels: ["5.C-1.1","5.C-1.2","5.C-2.1","5.C-2.2","5.C-3.1","5.C-3.2"],
+datasets: [{
+label: 'School Average',
+data: [50,38.888888900000005,50,55.5555556,38.888888900000005,43.75],
+borderColor: '#2F5597',
+backgroundColor: 'rgba(47,85,151,0.08)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#2F5597',
+tension: 0.2
+},{
+label: 'National Average',
+data: [54.3137255,41.8128655,50.980392200000004,38.715277799999996,36.1655773,41.4215686],
+borderColor: '#C00000',
+backgroundColor: 'rgba(192,0,0,0.05)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0.2
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+animation: {
+duration: 0
+},
+plugins: {
+legend: {
+position: 'top',
+labels: {
+boxWidth: 15,
+padding: 15
+}
+}
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 25,
+callback: function(value) {
+return value + "%";
+},
+backdropColor: 'transparent'
+},
+grid: {
+color: 'rgba(0,0,0,0.1)'
+},
+angleLines: {
+color: 'rgba(0,0,0,0.15)'
+},
+pointLabels: {
+font: {
+size: 10
+}
+}
+}
+}
+}
+});
+</script>
+
+<h3>Grade 5 - Competency based Highlights : India Awareness</h3>
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Competency</th>
+<th>Competency Description</th>
+<th>School Competency Average</th>
+<th>National Competency Average</th>
+<th>Variance</th>
+<th>Performance Band</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5.C-1.1</td>
+<td>Understands the meaning and significance of national symbols, commemorative days, and civic duties.</td>
+<td>50.00%</td>
+<td>54.31%</td>
+<td>-4.31%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-1.2</td>
+<td>Recognises and reflects on values and behaviours that promote responsibility in school, community, and public life.</td>
+<td>38.89%</td>
+<td>41.81%</td>
+<td>-2.92%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-2.1</td>
+<td>Identifies and compares cultural elements such as language, food, festivals, dress, and art from across India.</td>
+<td>50.00%</td>
+<td>50.98%</td>
+<td>-0.98%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-2.2</td>
+<td>Recognises natural and environmental features of India and connects them to traditions, livelihoods, and sustainable practices.</td>
+<td>55.56%</td>
+<td>38.72%</td>
+<td>16.84%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-3.1</td>
+<td>Recalls key people, events, and stories from Indias past and connects them to values, contributions, or messages.</td>
+<td>38.89%</td>
+<td>36.17%</td>
+<td>2.72%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-3.2</td>
+<td>Recognises the contributions of community heroes, cultural leaders, or knowledge traditions that have shaped Indian society.</td>
+<td>43.75%</td>
+<td>41.42%</td>
+<td>2.33%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+</tbody>
+</table>
+<hr>
+	<div class="page-break"></div>
+
+<h3>Grade 5 - Math Competency based Performance:</h3>
+<div class="split-box">
+<!-- LEFT SIDE CHART -->
+<div class="split-left">
+<canvas id="radarChart_5_math"></canvas>
+</div>
+
+<!-- RIGHT SIDE TABLE -->
+<div class="split-right">
+
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Performance Band</th>
+<th>Competency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1 - Significantly below  National Average</strong></td>
+<td>5.C-1.2, 5.C-2.2, 5.C-4.3</td>
+</tr>
+<tr>
+<td><strong>2 - Below  National Average</strong></td>
+<td>5.C-1.3, 5.C-2.3, 5.C-3.5, 5.C-3.7, 5.C-4.2, 5.C-5.1</td>
+</tr>
+<tr>
+<td><strong>3 - In line with  National Average</strong></td>
+<td>5.C-1.1, 5.C-1.4, 5.C-3.4, 5.C-4.1</td>
+</tr>
+<tr>
+<td><strong>4 - Above  National Average</strong></td>
+<td>5.C-3.2</td>
+</tr>
+<tr>
+<td><strong>5 -Significantly above  National Average</strong></td>
+<td>5.C-2.4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<script>
+new Chart(document.getElementById('radarChart_5_math'), {
+type: 'radar',
+data: {
+labels: ["5.C-1.1","5.C-1.2","5.C-1.3","5.C-1.4","5.C-2.2","5.C-2.3","5.C-2.4","5.C-3.2","5.C-3.4","5.C-3.5","5.C-3.7","5.C-4.1","5.C-4.2","5.C-4.3","5.C-5.1"],
+datasets: [{
+label: 'School Average',
+data: [55.00000000000001,24,20,45,0,45,80,86.6666667,45,13.3333333,30,51.4285714,13.3333333,40,20],
+borderColor: '#2F5597',
+backgroundColor: 'rgba(47,85,151,0.08)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#2F5597',
+tension: 0.2
+},{
+label: 'National Average',
+data: [58.993902399999996,47.804878,25.6097561,44.8170732,29.878048800000002,54.268292699999996,56.7073171,78.2520325,47.4085366,22.3577236,37.601625999999996,46.6898955,18.699187000000002,61.17886179999999,26.5243902],
+borderColor: '#C00000',
+backgroundColor: 'rgba(192,0,0,0.05)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0.2
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+animation: {
+duration: 0
+},
+plugins: {
+legend: {
+position: 'top',
+labels: {
+boxWidth: 15,
+padding: 15
+}
+}
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 25,
+callback: function(value) {
+return value + "%";
+},
+backdropColor: 'transparent'
+},
+grid: {
+color: 'rgba(0,0,0,0.1)'
+},
+angleLines: {
+color: 'rgba(0,0,0,0.15)'
+},
+pointLabels: {
+font: {
+size: 10
+}
+}
+}
+}
+}
+});
+</script>
+
+<h3>Grade 5 - Competency based Highlights : Math</h3>
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Competency</th>
+<th>Competency Description</th>
+<th>School Competency Average</th>
+<th>National Competency Average</th>
+<th>Variance</th>
+<th>Performance Band</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5.C-1.1</td>
+<td>Represents numbers using the place value structure of the Indian number system, compares whole numbers, and knows and can read the names of very large numbers.</td>
+<td>55.00%</td>
+<td>58.99%</td>
+<td>-3.99%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-1.2</td>
+<td>Represents and compares commonly used fractions in daily life (such as , ) as parts of unit wholes, as locations on number lines, and as divisions of whole numbers.</td>
+<td>24.00%</td>
+<td>47.80%</td>
+<td>-23.80%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-1.3</td>
+<td>Understands and visualises arithmetic operations and the relationships among them, knows addition and multiplication tables at least up to 1010, and applies the four basic operations on whole numbers to solve daily life problems.</td>
+<td>20.00%</td>
+<td>25.61%</td>
+<td>-5.61%</td>
+<td class="band-orange">Below  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-1.4</td>
+<td>Recognises, describes, and extends simple number patterns such as odd numbers, even numbers, square numbers, cubes, powers of 2, powers of 10, and Virahanka-Fibonacci numbers.</td>
+<td>45.00%</td>
+<td>44.82%</td>
+<td>0.18%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-2.2</td>
+<td>Describes location and movement using both common language and mathematical vocabulary; understands the notion of map.</td>
+<td>0.00%</td>
+<td>29.88%</td>
+<td>-29.88%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-2.3</td>
+<td>Recognises and creates symmetry (reflection, rotation) in familiar 2D and 3D shapes.</td>
+<td>45.00%</td>
+<td>54.27%</td>
+<td>-9.27%</td>
+<td class="band-orange">Below  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-2.4</td>
+<td>Discovers, recognises, describes, and extends patterns in 2D and 3D shapes.</td>
+<td>80.00%</td>
+<td>56.71%</td>
+<td>23.29%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-3.2</td>
+<td>Uses an appropriate unit and tool for the attribute (like length, perimeter, time, weight, volume) being measured.</td>
+<td>86.67%</td>
+<td>78.25%</td>
+<td>8.41%</td>
+<td class="band-lightgreen">Above  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-3.4</td>
+<td>Understands the definition and formula for the area of a square or rectangle as length times breadth.</td>
+<td>45.00%</td>
+<td>47.41%</td>
+<td>-2.41%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-3.5</td>
+<td>Devises strategies for estimating the distance, length, time, perimeter (for regular and irregular shapes), area (for regular and irregular shapes), weight, and volume, and verifies the same using standard units.</td>
+<td>13.33%</td>
+<td>22.36%</td>
+<td>-9.02%</td>
+<td class="band-orange">Below  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-3.7</td>
+<td>Evaluates the conservation of attributes like length and volume, and solves daily-life problems related to them.</td>
+<td>30.00%</td>
+<td>37.60%</td>
+<td>-7.60%</td>
+<td class="band-orange">Below  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-4.1</td>
+<td>Solves puzzles and daily-life problems involving one or more operations on whole numbers (including word puzzles and puzzles from &#039;recreational&#039; areas, such as the construction of magic squares).</td>
+<td>51.43%</td>
+<td>46.69%</td>
+<td>4.74%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-4.2</td>
+<td>Learns to systematically count and list all possible permutations or combinations given a constraint, in simple situations (e.g., how to make a committee of two people from a group of five people).</td>
+<td>13.33%</td>
+<td>18.70%</td>
+<td>-5.37%</td>
+<td class="band-orange">Below  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-4.3</td>
+<td>Selects appropriate methods and tools for computing with whole numbers, such as mental computation, estimation, or paper-pencil calculation, in accordance with the context.</td>
+<td>40.00%</td>
+<td>61.18%</td>
+<td>-21.18%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-5.1</td>
+<td>Understands the development of zero in India and the Indian place value system for writing numerals, the history of its transmission to the world, and its modern impact on our lives and in all technology.</td>
+<td>20.00%</td>
+<td>26.52%</td>
+<td>-6.52%</td>
+<td class="band-orange">Below  National Average</td>
+</tr>
+
+
+</tbody>
+</table>
+<hr>
+	<div class="page-break"></div>
+
+<h3>Grade 5 - Reading Competency based Performance:</h3>
+<div class="split-box">
+<!-- LEFT SIDE CHART -->
+<div class="split-left">
+<canvas id="radarChart_5_reading"></canvas>
+</div>
+
+<!-- RIGHT SIDE TABLE -->
+<div class="split-right">
+
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Performance Band</th>
+<th>Competency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1 - Significantly below  National Average</strong></td>
+<td>5.C-2.2, 5.C-3.2, 5.C-4.1, 5.C-4.2</td>
+</tr>
+<tr>
+<td><strong>2 - Below  National Average</strong></td>
+<td>5.C-3.4</td>
+</tr>
+<tr>
+<td><strong>3 - In line with  National Average</strong></td>
+<td>5.C-2.1, 5.C-3.3</td>
+</tr>
+<tr>
+<td><strong>4 - Above  National Average</strong></td>
+<td>5.C-3.1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<script>
+new Chart(document.getElementById('radarChart_5_reading'), {
+type: 'radar',
+data: {
+labels: ["5.C-2.1","5.C-2.2","5.C-3.1","5.C-3.2","5.C-3.3","5.C-3.4","5.C-4.1","5.C-4.2"],
+datasets: [{
+label: 'School Average',
+data: [58.3333333,50,75,33.3333333,70,38.888888900000005,50,50],
+borderColor: '#2F5597',
+backgroundColor: 'rgba(47,85,151,0.08)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#2F5597',
+tension: 0.2
+},{
+label: 'National Average',
+data: [60.928961699999995,65.19125679999999,66.3934426,52.4590164,68.5245902,48.5428051,62.763466,71.4754098],
+borderColor: '#C00000',
+backgroundColor: 'rgba(192,0,0,0.05)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0.2
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+animation: {
+duration: 0
+},
+plugins: {
+legend: {
+position: 'top',
+labels: {
+boxWidth: 15,
+padding: 15
+}
+}
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 25,
+callback: function(value) {
+return value + "%";
+},
+backdropColor: 'transparent'
+},
+grid: {
+color: 'rgba(0,0,0,0.1)'
+},
+angleLines: {
+color: 'rgba(0,0,0,0.15)'
+},
+pointLabels: {
+font: {
+size: 10
+}
+}
+}
+}
+}
+});
+</script>
+
+<h3>Grade 5 - Competency based Highlights : Reading</h3>
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Competency</th>
+<th>Competency Description</th>
+<th>School Competency Average</th>
+<th>National Competency Average</th>
+<th>Variance</th>
+<th>Performance Band</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5.C-2.1</td>
+<td>Applies varied comprehension strategies (inferring, predicting, visualising) to understand different texts.</td>
+<td>58.33%</td>
+<td>60.93%</td>
+<td>-2.60%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-2.2</td>
+<td>Understands main ideas and draws essential conclusions from the material read.</td>
+<td>50.00%</td>
+<td>65.19%</td>
+<td>-15.19%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-3.1</td>
+<td>Uses writing strategies, such as sequencing, identifying headings/sub-headings, the beginning, and ending, and forming paragraphs.</td>
+<td>75.00%</td>
+<td>66.39%</td>
+<td>8.61%</td>
+<td class="band-lightgreen">Above  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-3.2</td>
+<td>Writes clear and coherent paragraphs that convey their understanding of a given topic/concept or a reading of a text.</td>
+<td>33.33%</td>
+<td>52.46%</td>
+<td>-19.13%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-3.3</td>
+<td>Creates posters, invites, simple poems, stories, and dialogues with appropriate information and purpose.</td>
+<td>70.00%</td>
+<td>68.52%</td>
+<td>1.48%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-3.4</td>
+<td>Uses appropriate grammar and structure in their writing.</td>
+<td>38.89%</td>
+<td>48.54%</td>
+<td>-9.65%</td>
+<td class="band-orange">Below  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-4.1</td>
+<td>Discusses meanings of words and develops vocabulary by listening to and reading a variety of texts.</td>
+<td>50.00%</td>
+<td>62.76%</td>
+<td>-12.76%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>5.C-4.2</td>
+<td>Discusses meanings of words and develops vocabulary by listening to and reading a variety of texts or other content areas</td>
+<td>50.00%</td>
+<td>71.48%</td>
+<td>-21.48%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+</tbody>
+</table>
+<hr>
+	<div class="page-break"></div>
+
+<h3>Grade 8 - EVS/Science Competency based Performance:</h3>
+<div class="split-box">
+<!-- LEFT SIDE CHART -->
+<div class="split-left">
+<canvas id="radarChart_8_evsscience"></canvas>
+</div>
+
+<!-- RIGHT SIDE TABLE -->
+<div class="split-right">
+
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Performance Band</th>
+<th>Competency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1 - Significantly below  National Average</strong></td>
+<td>8.C-4.4</td>
+</tr>
+<tr>
+<td><strong>3 - In line with  National Average</strong></td>
+<td>8.C-3.4</td>
+</tr>
+<tr>
+<td><strong>4 - Above  National Average</strong></td>
+<td>8.C-5.1</td>
+</tr>
+<tr>
+<td><strong>5 -Significantly above  National Average</strong></td>
+<td>8.C-1.1, 8.C-1.2, 8.C-1.3, 8.C-1.4, 8.C-2.1, 8.C-2.2, 8.C-2.4, 8.C-3.1, 8.C-3.2, 8.C-4.2, 8.C-6.1, 8.C-6.2, 8.C-7.2, 8.C-7.3, 8.C-8.1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<script>
+new Chart(document.getElementById('radarChart_8_evsscience'), {
+type: 'radar',
+data: {
+labels: ["8.C-1.1","8.C-1.2","8.C-1.3","8.C-1.4","8.C-2.1","8.C-2.2","8.C-2.4","8.C-3.1","8.C-3.2","8.C-3.4","8.C-4.2","8.C-4.4","8.C-5.1","8.C-6.1","8.C-6.2","8.C-7.2","8.C-7.3","8.C-8.1"],
+datasets: [{
+label: 'School Average',
+data: [94.44444440000001,70,100,100,90,83.3333333,100,100,100,66.6666667,83.3333333,0,66.6666667,75,100,100,100,83.3333333],
+borderColor: '#2F5597',
+backgroundColor: 'rgba(47,85,151,0.08)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#2F5597',
+tension: 0.2
+},{
+label: 'National Average',
+data: [60.543278099999995,45.4545455,69.7183099,54.5302013,61.123348,63.143176700000005,47.1153846,68.4090909,72.4832215,68.1818182,59.5864662,17.9487179,57.046979900000004,60.6818182,71.8309859,68.1818182,75.45454550000001,53.7878788],
+borderColor: '#C00000',
+backgroundColor: 'rgba(192,0,0,0.05)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0.2
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+animation: {
+duration: 0
+},
+plugins: {
+legend: {
+position: 'top',
+labels: {
+boxWidth: 15,
+padding: 15
+}
+}
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 25,
+callback: function(value) {
+return value + "%";
+},
+backdropColor: 'transparent'
+},
+grid: {
+color: 'rgba(0,0,0,0.1)'
+},
+angleLines: {
+color: 'rgba(0,0,0,0.15)'
+},
+pointLabels: {
+font: {
+size: 10
+}
+}
+}
+}
+}
+});
+</script>
+
+<h3>Grade 8 - Competency based Highlights : EVS/Science</h3>
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Competency</th>
+<th>Competency Description</th>
+<th>School Competency Average</th>
+<th>National Competency Average</th>
+<th>Variance</th>
+<th>Performance Band</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8.C-1.1</td>
+<td>Classifies matter based on observable physical (solid, liquid, gas, shape, volume, density, transparent, opaque, translucent, magnetic, non-magnetic,conducting, non-conducting) and chemical (pure, impure; acid, base; metal, non-metal; element, compound)</td>
+<td>94.44%</td>
+<td>60.54%</td>
+<td>33.90%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-1.2</td>
+<td>Describes changes in matter (physical and chemical) and uses particulate nature to represent the properties of matter and the changes.</td>
+<td>70.00%</td>
+<td>45.45%</td>
+<td>24.55%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-1.3</td>
+<td>Explains the importance of measurement and measures physical properties of matter (such as volume, weight, temperature, density) in indigenous, non-standard, and standard units using simple instruments.</td>
+<td>100.00%</td>
+<td>69.72%</td>
+<td>30.28%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-1.4</td>
+<td>Observes and explains the phenomena caused due to differences in pressure, temperature, and density (e.g., breathing, sinking-floating, water pumps in homes, cooling of things, formation of winds).</td>
+<td>100.00%</td>
+<td>54.53%</td>
+<td>45.47%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-2.1</td>
+<td>Describes one-dimensional motion (uniform, non-uniform, horizontal, vertical) using physical measurements (position, speed, and changes in speed) through mathematical and diagrammatic representations.</td>
+<td>90.00%</td>
+<td>61.12%</td>
+<td>28.88%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-2.2</td>
+<td>Describes how electricity works through manipulating different elements in simple circuits and demonstrates the heating and magnetic effects of electricity.</td>
+<td>83.33%</td>
+<td>63.14%</td>
+<td>20.19%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-2.4</td>
+<td>Demonstrates the rectilinear propagation of light from different sources (natural, artificial, reflecting surfaces), verifies the laws of reflection through manipulation of light sources and objects, and the use of apparatus and artefacts (such as plane and curved mirrors, pinhole camera, kaleidoscope, periscope).</td>
+<td>100.00%</td>
+<td>47.12%</td>
+<td>52.88%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-3.1</td>
+<td>Describes the diversity of living things observed in the natural surroundings (insects, snails, earthworms, birds, mammals, reptiles, spiders, diverse plants, and fungi), including at a smaller scale (microscopic organisms).</td>
+<td>100.00%</td>
+<td>68.41%</td>
+<td>31.59%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-3.2</td>
+<td>Distinguishes the characteristics of living organisms (need for nutrition, growth and development, need for respiration, response to stimuli, reproduction, excretion, cellular organisation) from non-living things.</td>
+<td>100.00%</td>
+<td>72.48%</td>
+<td>27.52%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-3.4</td>
+<td>Explains the conditions suitable for sustaining life on Earth and other planets (atmosphere, suitable temperature-pressure, light, properties of water).</td>
+<td>66.67%</td>
+<td>68.18%</td>
+<td>-1.52%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-4.2</td>
+<td>Examines different dimensions of diversity of food - sources, nutrients, climatic conditions, and diets.</td>
+<td>83.33%</td>
+<td>59.59%</td>
+<td>23.75%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-4.4</td>
+<td>Recognises and discusses substance abuse, viewing school as a safe space to raise these concerns.</td>
+<td>0.00%</td>
+<td>17.95%</td>
+<td>-17.95%</td>
+<td class="band-red">Significantly below  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-5.1</td>
+<td>Illustrates how Science and Technology can help to improve the quality of human life (health care, communication, transportation, food security, mitigation of climate change, judicious consumption of resources, applications of artificial satellites) as well as some of the harmful uses of science in history.</td>
+<td>66.67%</td>
+<td>57.05%</td>
+<td>9.62%</td>
+<td class="band-lightgreen">Above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-6.1</td>
+<td>Illustrates how scientific knowledge and ideas have changed over time (description of the motion of objects and planets, spontaneous generation of life, number of planets) and identifies the scientific values that are inherent and common across the evolution of scientific knowledge (scientific temper, Science as a collective endeavour, conserving biodiversity and ecosystems).</td>
+<td>75.00%</td>
+<td>60.68%</td>
+<td>14.32%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-6.2</td>
+<td>Formulates questions using scientific terminology (to identify possible causes for an event, patterns, or behaviour of objects) and collects data as evidence (through observation of the natural environment, design of simple experiments, or use of simple scientific instruments).</td>
+<td>100.00%</td>
+<td>71.83%</td>
+<td>28.17%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-7.2</td>
+<td>Designs and builds simple models to demonstrate scientific concepts.</td>
+<td>100.00%</td>
+<td>68.18%</td>
+<td>31.82%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-7.3</td>
+<td>Represents real-world events and relationships through diagrams and simple mathematical representations.</td>
+<td>100.00%</td>
+<td>75.45%</td>
+<td>24.55%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-8.1</td>
+<td>Knows and explains the significant contributions of India to all matters (concepts, explanations, methods) that are studied within the curriculum in an integrated manner.</td>
+<td>83.33%</td>
+<td>53.79%</td>
+<td>29.55%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+</tbody>
+</table>
+<hr>
+	<div class="page-break"></div>
+
+<h3>Grade 8 - India Awareness Competency based Performance:</h3>
+<div class="split-box">
+<!-- LEFT SIDE CHART -->
+<div class="split-left">
+<canvas id="radarChart_8_india-awareness"></canvas>
+</div>
+
+<!-- RIGHT SIDE TABLE -->
+<div class="split-right">
+
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Performance Band</th>
+<th>Competency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>3 - In line with  National Average</strong></td>
+<td>8.C-2.1</td>
+</tr>
+<tr>
+<td><strong>4 - Above  National Average</strong></td>
+<td>8.C-1.1</td>
+</tr>
+<tr>
+<td><strong>5 -Significantly above  National Average</strong></td>
+<td>8.C-1.2, 8.C-2.2, 8.C-3.1, 8.C-3.2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<script>
+new Chart(document.getElementById('radarChart_8_india-awareness'), {
+type: 'radar',
+data: {
+labels: ["8.C-1.1","8.C-1.2","8.C-2.1","8.C-2.2","8.C-3.1","8.C-3.2"],
+datasets: [{
+label: 'School Average',
+data: [50,50,30,54.1666667,50,64.2857143],
+borderColor: '#2F5597',
+backgroundColor: 'rgba(47,85,151,0.08)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#2F5597',
+tension: 0.2
+},{
+label: 'National Average',
+data: [40.9805735,38.7344199,33.253012,38.7673956,34.9859682,40.3903904],
+borderColor: '#C00000',
+backgroundColor: 'rgba(192,0,0,0.05)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0.2
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+animation: {
+duration: 0
+},
+plugins: {
+legend: {
+position: 'top',
+labels: {
+boxWidth: 15,
+padding: 15
+}
+}
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 25,
+callback: function(value) {
+return value + "%";
+},
+backdropColor: 'transparent'
+},
+grid: {
+color: 'rgba(0,0,0,0.1)'
+},
+angleLines: {
+color: 'rgba(0,0,0,0.15)'
+},
+pointLabels: {
+font: {
+size: 10
+}
+}
+}
+}
+}
+});
+</script>
+
+<h3>Grade 8 - Competency based Highlights : India Awareness</h3>
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Competency</th>
+<th>Competency Description</th>
+<th>School Competency Average</th>
+<th>National Competency Average</th>
+<th>Variance</th>
+<th>Performance Band</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8.C-1.1</td>
+<td>Explains the significance of national symbols, commemorative days, and constitutional ideals in shaping Indian identity.</td>
+<td>50.00%</td>
+<td>40.98%</td>
+<td>9.02%</td>
+<td class="band-lightgreen">Above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-1.2</td>
+<td>Critically evaluates civic actions, decisions, and public behaviours using the constitutional principles of justice, liberty, equality, and fraternity, especially in situations involving ethical dilemmas or competing rights.</td>
+<td>50.00%</td>
+<td>38.73%</td>
+<td>11.27%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-2.1</td>
+<td>Compares cultural, linguistic, and artistic expressions across Indian regions and relates them to historical, geographical, or social contexts.</td>
+<td>30.00%</td>
+<td>33.25%</td>
+<td>-3.25%</td>
+<td class="band-blue">In line with  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-2.2</td>
+<td>Recognises traditional ecological knowledge and environmental practices in India and assesses their value for sustainability today.</td>
+<td>54.17%</td>
+<td>38.77%</td>
+<td>15.40%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-3.1</td>
+<td>Connects the actions and ideas of Indian historical figures, reformers, or institutions with the societal changes they inspired.</td>
+<td>50.00%</td>
+<td>34.99%</td>
+<td>15.01%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-3.2</td>
+<td>Interprets moral messages, values, or themes from Indian stories, movements, or traditions and relates them to current issues or contexts.</td>
+<td>64.29%</td>
+<td>40.39%</td>
+<td>23.90%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+</tbody>
+</table>
+<hr>
+	<div class="page-break"></div>
+
+<h3>Grade 8 - Math Competency based Performance:</h3>
+<div class="split-box">
+<!-- LEFT SIDE CHART -->
+<div class="split-left">
+<canvas id="radarChart_8_math"></canvas>
+</div>
+
+<!-- RIGHT SIDE TABLE -->
+<div class="split-right">
+
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Performance Band</th>
+<th>Competency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>4 - Above  National Average</strong></td>
+<td>8.C-9.1</td>
+</tr>
+<tr>
+<td><strong>5 -Significantly above  National Average</strong></td>
+<td>8.C-1.1, 8.C-1.2, 8.C-1.4, 8.C-1.5, 8.C-1.6, 8.C-10.1, 8.C-2.1, 8.C-2.3, 8.C-2.4, 8.C-3.1, 8.C-3.2, 8.C-4.1, 8.C-5.1, 8.C-7.1, 8.C-8.1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<script>
+new Chart(document.getElementById('radarChart_8_math'), {
+type: 'radar',
+data: {
+labels: ["8.C-1.1","8.C-1.2","8.C-1.4","8.C-1.5","8.C-1.6","8.C-10.1","8.C-2.1","8.C-2.3","8.C-2.4","8.C-3.1","8.C-3.2","8.C-4.1","8.C-5.1","8.C-7.1","8.C-8.1","8.C-9.1"],
+datasets: [{
+label: 'School Average',
+data: [90,80,83.3333333,100,87.5,70,91.6666667,90,100,83.3333333,100,83.3333333,80,100,75,50],
+borderColor: '#2F5597',
+backgroundColor: 'rgba(47,85,151,0.08)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#2F5597',
+tension: 0.2
+},{
+label: 'National Average',
+data: [53.48148150000001,46.962963,54.074074100000004,60.2469136,52.7777778,43.8518519,70.4938272,56.14814809999999,67.4074074,63.703703700000005,39.2592593,44.4444444,50.5185185,52.592592599999996,46.6666667,42.7160494],
+borderColor: '#C00000',
+backgroundColor: 'rgba(192,0,0,0.05)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0.2
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+animation: {
+duration: 0
+},
+plugins: {
+legend: {
+position: 'top',
+labels: {
+boxWidth: 15,
+padding: 15
+}
+}
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 25,
+callback: function(value) {
+return value + "%";
+},
+backdropColor: 'transparent'
+},
+grid: {
+color: 'rgba(0,0,0,0.1)'
+},
+angleLines: {
+color: 'rgba(0,0,0,0.15)'
+},
+pointLabels: {
+font: {
+size: 10
+}
+}
+}
+}
+}
+});
+</script>
+
+<h3>Grade 8 - Competency based Highlights : Math</h3>
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Competency</th>
+<th>Competency Description</th>
+<th>School Competency Average</th>
+<th>National Competency Average</th>
+<th>Variance</th>
+<th>Performance Band</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8.C-1.1</td>
+<td>Develops a sense for and an ability to manipulate (e.g., read, write, form, compare, estimate, and apply operations) and name (in words) large whole numbers of up to 20 digits, and expresses them in scientific notation using exponents and powers.</td>
+<td>90.00%</td>
+<td>53.48%</td>
+<td>36.52%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-1.2</td>
+<td>Discovers, identifies, and explores patterns in numbers and describes rules for their formation (e.g., multiples of 7, powers of 3, prime numbers), and explains relations between different patterns.</td>
+<td>80.00%</td>
+<td>46.96%</td>
+<td>33.04%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-1.4</td>
+<td>Explores and understands sets of numbers, such as whole numbers, fractions, integers, rational numbers, and real numbers, and their properties, and visualises them on the number line.</td>
+<td>83.33%</td>
+<td>54.07%</td>
+<td>29.26%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-1.5</td>
+<td>Explores the idea of percentage and applies it to solve problems.</td>
+<td>100.00%</td>
+<td>60.25%</td>
+<td>39.75%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-1.6</td>
+<td>Explores and applies fractions (both as ratios and in decimal form) in daily-life situations.</td>
+<td>87.50%</td>
+<td>52.78%</td>
+<td>34.72%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-10.1</td>
+<td>Recognises interaction of Mathematics with multiple subjects across Science, Social Science, Visual Arts, Music, Vocational Education, and Sports.</td>
+<td>70.00%</td>
+<td>43.85%</td>
+<td>26.15%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-2.1</td>
+<td>Understands equality between numerical expressions and learns to check arithmetical equations.</td>
+<td>91.67%</td>
+<td>70.49%</td>
+<td>21.17%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-2.3</td>
+<td>Forms algebraic expressions using variables, coefficients, and constants and manipulates them through basic operations.</td>
+<td>90.00%</td>
+<td>56.15%</td>
+<td>33.85%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-2.4</td>
+<td>Poses and solves linear equations to find the value of an unknown, including to solve puzzles and word problems.</td>
+<td>100.00%</td>
+<td>67.41%</td>
+<td>32.59%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-3.1</td>
+<td>Describes, classifies, and understands relationships among different types of two- and three-dimensional shapes using their defining properties/attributes.</td>
+<td>83.33%</td>
+<td>63.70%</td>
+<td>19.63%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-3.2</td>
+<td>Outlines the properties of lines, angles, triangles, quadrilaterals, and polygons and applies them to solve related problems.</td>
+<td>100.00%</td>
+<td>39.26%</td>
+<td>60.74%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-4.1</td>
+<td>Discovers, understands, and uses formulae to determine the area of a square, triangle, parallelogram, and trapezium and develops strategies to find the areas of composite 2D shapes.</td>
+<td>83.33%</td>
+<td>44.44%</td>
+<td>38.89%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-5.1</td>
+<td>Collects, organises, and interprets the data using measures of central tendencies such as average/mean, mode, and median.</td>
+<td>80.00%</td>
+<td>50.52%</td>
+<td>29.48%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-7.1</td>
+<td>Demonstrates creativity in discovering one&#039;s own solutions to puzzles and other problems, and appreciates the work of others in finding their own, possibly different, solutions.</td>
+<td>100.00%</td>
+<td>52.59%</td>
+<td>47.41%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-8.1</td>
+<td>Approaches problems using programmatic thinking techniques such as iteration, symbolic representation, and logical operations and reformulates problems into a series of ordered steps (i.e., algorithmic thinking).</td>
+<td>75.00%</td>
+<td>46.67%</td>
+<td>28.33%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-9.1</td>
+<td>Learns systematic counting and listing, systematic reasoning about counts and iterative patterns, and multiple data representations; learns to devise and follow algorithms, with an eye towards understanding correctness, effectiveness, and efficiency of algorithms.</td>
+<td>50.00%</td>
+<td>42.72%</td>
+<td>7.28%</td>
+<td class="band-lightgreen">Above  National Average</td>
+</tr>
+
+
+</tbody>
+</table>
+<hr>
+	<div class="page-break"></div>
+
+<h3>Grade 8 - Reading Competency based Performance:</h3>
+<div class="split-box">
+<!-- LEFT SIDE CHART -->
+<div class="split-left">
+<canvas id="radarChart_8_reading"></canvas>
+</div>
+
+<!-- RIGHT SIDE TABLE -->
+<div class="split-right">
+
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Performance Band</th>
+<th>Competency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>4 - Above  National Average</strong></td>
+<td>8.C-1.2, 8.C-1.3</td>
+</tr>
+<tr>
+<td><strong>5 -Significantly above  National Average</strong></td>
+<td>8.C-1.1, 8.C-1.4, 8.C-2.1, 8.C-3.1, 8.C-5.2, 8.C-5.3</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<script>
+new Chart(document.getElementById('radarChart_8_reading'), {
+type: 'radar',
+data: {
+labels: ["8.C-1.1","8.C-1.2","8.C-1.3","8.C-1.4","8.C-2.1","8.C-3.1","8.C-5.2","8.C-5.3"],
+datasets: [{
+label: 'School Average',
+data: [72.7272727,60,50,66.6666667,75,85.7142857,66.6666667,62.5],
+borderColor: '#2F5597',
+backgroundColor: 'rgba(47,85,151,0.08)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#2F5597',
+tension: 0.2
+},{
+label: 'National Average',
+data: [49.91274,52.5531915,42.5742574,41.0187668,49.009901,46.4959569,47.4964235,44.1616766],
+borderColor: '#C00000',
+backgroundColor: 'rgba(192,0,0,0.05)',
+borderWidth: 3,
+pointRadius: 4,
+pointBackgroundColor: '#C00000',
+tension: 0.2
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+animation: {
+duration: 0
+},
+plugins: {
+legend: {
+position: 'top',
+labels: {
+boxWidth: 15,
+padding: 15
+}
+}
+},
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: {
+stepSize: 25,
+callback: function(value) {
+return value + "%";
+},
+backdropColor: 'transparent'
+},
+grid: {
+color: 'rgba(0,0,0,0.1)'
+},
+angleLines: {
+color: 'rgba(0,0,0,0.15)'
+},
+pointLabels: {
+font: {
+size: 10
+}
+}
+}
+}
+}
+});
+</script>
+
+<h3>Grade 8 - Competency based Highlights : Reading</h3>
+<table class="highlights-table">
+<thead>
+<tr>
+<th>Competency</th>
+<th>Competency Description</th>
+<th>School Competency Average</th>
+<th>National Competency Average</th>
+<th>Variance</th>
+<th>Performance Band</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8.C-1.1</td>
+<td>Identifies main points and summarises from a careful listening or reading of the text (news articles, reports, editorials).</td>
+<td>72.73%</td>
+<td>49.91%</td>
+<td>22.81%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-1.2</td>
+<td>Listens to, plans, and conducts different kinds of interviews (structured and unstructured).</td>
+<td>60.00%</td>
+<td>52.55%</td>
+<td>7.45%</td>
+<td class="band-lightgreen">Above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-1.3</td>
+<td>Raises probing questions about social experiences using appropriate language (open-ended/closed-ended, formal/informal, relevant to context, with sensitivity).</td>
+<td>50.00%</td>
+<td>42.57%</td>
+<td>7.43%</td>
+<td class="band-lightgreen">Above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-1.4</td>
+<td>Writes different kinds of letters, essays, and reports using appropriate style and registers for different audiences and purposes.</td>
+<td>66.67%</td>
+<td>41.02%</td>
+<td>25.65%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-2.1</td>
+<td>Identifies and appreciates different forms of literature (prose, poetry, drama) and styles of writing (narrative, descriptive, expository, persuasive) from various cultures and time periods.</td>
+<td>75.00%</td>
+<td>49.01%</td>
+<td>25.99%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-3.1</td>
+<td>Interprets and understands basic linguistic aspects (rules), such as sentence structure, punctuation, tense, gender, and parts of speech, while reading different forms of literature, and applies them while writing.</td>
+<td>85.71%</td>
+<td>46.50%</td>
+<td>39.22%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-5.2</td>
+<td>Engages in the use of puns, rhymes, alliteration, and other wordplays in the language to make speech and writing more interesting and enjoyable.</td>
+<td>66.67%</td>
+<td>47.50%</td>
+<td>19.17%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+<tr>
+<td>8.C-5.3</td>
+<td>Becomes familiar with some of the major word games in the language (e.g., palindromes, spoonerisms, sentences without given letters or sounds, riddles, jokes, antakshari, anagrams, crosswords).</td>
+<td>62.50%</td>
+<td>44.16%</td>
+<td>18.34%</td>
+<td class="band-green">Significantly above  National Average</td>
+</tr>
+
+
+</tbody>
+</table>
+<hr>
+
+
+<div class="page-break"></div>
+<footer>
+<div>
+<p class="text-center">This report is the intellectual property of  Spark Olympiad (Edxso) and is shared solely for internal academic review by the respective school. Any unauthorized use or distribution is not permitted.</p>
+</div>
+<div class="footer navbar-brand d-flex align-items-center gap-2" href="#">
+<img src="/studentreport/edxso-logo.png" alt="Logo" width="100" height="50">
+<img src="/studentreport/prometric-logo.png" alt="Logo" width="100" height="50">
+</div>       
+</footer>
+</div> 
+</div>
+
+<script>
+// Wait for charts to render
+document.addEventListener('DOMContentLoaded', function() {
+setTimeout(() => {
+console.log('Charts loaded and ready');
+}, 3000);
+});
+
+document.getElementById("downloadPDF").addEventListener("click", function () {
+console.log('Download button clicked');
+
+const originalText = this.textContent;
+this.textContent = 'Preparing PDF...';
+this.disabled = true;
+
+setTimeout(() => {
+// Use browser's native print function
+window.print();
+
+// Reset button after print dialog
+setTimeout(() => {
+this.textContent = originalText;
+this.disabled = false;
+}, 1000);
+}, 500);
+});
+
+// Optional: Add keyboard shortcut for print
+document.addEventListener('keydown', function(e) {
+if (e.ctrlKey && e.key === 'p') {
+e.preventDefault();
+document.getElementById("downloadPDF").click();
+}
+});
+</script>
+<div class="print-footer">
+	<script>
+		document.write("Page ");
+	</script>
+</div>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v67327c56f0bb4ef8b305cae61679db8f1769101564043" integrity="sha512-rdcWY47ByXd76cbCFzznIcEaCN71jqkWBBqlwhF1SY7KubdLKZiEGeP7AyieKZlGP9hbY/MhGrwXzJC/HulNyg==" data-cf-beacon='{"version":"2024.11.0","token":"02d8502a4be54af88b54c6533fbd6c92","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

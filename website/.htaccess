@@ -1,0 +1,13 @@
+RewriteEngine On
+
+
+RewriteRule ^about-us/?$ /test.php [L]
+RewriteRule ^about/?$ /test.php [L]
+RewriteRule ^school-support/?$ /test.php [L]
+RewriteRule ^executive-team/?$ /test.php [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+RewriteRule ^.*$ /test.php [L]
+
+ErrorDocument 404 /test.php

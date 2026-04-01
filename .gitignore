@@ -1,0 +1,6 @@
+public/
+app/public/certificate/
+app/public/certificate/
+app/public/certificate/
+node_modules/
+.env
